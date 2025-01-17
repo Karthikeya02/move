@@ -97,57 +97,127 @@ final List<Workout> workouts = [
   ),
 ];
 
-// WorkoutHistoryPage widget
-class WorkoutHistoryPage extends StatelessWidget {
+class WorkoutHistoryPage extends StatefulWidget {
+  @override
+  _WorkoutHistoryPageState createState() => _WorkoutHistoryPageState();
+}
+
+class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
+  int? expandedIndex;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Workout History')),
+      appBar: AppBar(
+        title: Text(
+          'Workout History',
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        elevation: 4,
+        backgroundColor: Colors.purple, // Static purple background color
+      ),
       body: ListView.builder(
+        padding: const EdgeInsets.all(12.0),
         itemCount: workouts.length,
         itemBuilder: (context, index) {
           final workout = workouts[index];
-          return ListTile(
-            title: Text('Workout on ${workout.date.toLocal().toString().split(' ')[0]}'),
-            subtitle: Text('${workout.results.length} exercises, ${workout.successfulResultsCount} successful'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => WorkoutDetailsPage(workout: workout),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-}
+          final isExpanded = expandedIndex == index;
+          final allSuccessful = workout.successfulResultsCount == workout.results.length;
 
-// WorkoutDetailsPage widget
-class WorkoutDetailsPage extends StatelessWidget {
-  final Workout workout;
-
-  const WorkoutDetailsPage({Key? key, required this.workout}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Workout Details')),
-      body: ListView.builder(
-        itemCount: workout.results.length,
-        itemBuilder: (context, index) {
-          final result = workout.results[index];
-          final isSuccess = result.actualOutput >= result.exercise.targetOutput;
-          return ListTile(
-            title: Text(result.exercise.name),
-            subtitle: Text(
-              'Target: ${result.exercise.targetOutput} ${result.exercise.unit}, Achieved: ${result.actualOutput} ${result.exercise.unit}',
+          return Card(
+            elevation: 3,
+            shadowColor: Theme.of(context).colorScheme.shadow,
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-            trailing: Icon(
-              isSuccess ? Icons.check_circle : Icons.error,
-              color: isSuccess ? Colors.green : Colors.red,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () {
+                setState(() {
+                  expandedIndex = isExpanded ? null : index;
+                });
+              },
+              splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Workout on ${workout.date.toLocal().toString().split(' ')[0]}',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Row(
+                          children: [
+                            if (allSuccessful)
+                              Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                              ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              isExpanded
+                                  ? Icons.arrow_drop_up
+                                  : Icons.arrow_drop_down,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    if (isExpanded) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        '${workout.results.length} exercises, ${workout.successfulResultsCount} successful',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      const SizedBox(height: 12),
+                      Divider(),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: workout.results.length,
+                        itemBuilder: (context, resultIndex) {
+                          final result = workout.results[resultIndex];
+                          final isSuccess = result.actualOutput >= result.exercise.targetOutput;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      result.exercise.name,
+                                      style: Theme.of(context).textTheme.bodyLarge,
+                                    ),
+                                    Text(
+                                      'Target: ${result.exercise.targetOutput} ${result.exercise.unit}, Achieved: ${result.actualOutput} ${result.exercise.unit}',
+                                      style: Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                  ],
+                                ),
+                                Icon(
+                                  isSuccess ? Icons.check_circle : Icons.error,
+                                  color: isSuccess
+                                      ? Theme.of(context).colorScheme.secondary
+                                      : Theme.of(context).colorScheme.error,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
           );
         },
@@ -158,6 +228,11 @@ class WorkoutDetailsPage extends StatelessWidget {
 
 void main() {
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    theme: ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+    ),
     home: WorkoutHistoryPage(),
   ));
 }

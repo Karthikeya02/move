@@ -139,7 +139,7 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
                   expandedIndex = isExpanded ? null : index;
                 });
               },
-              splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              splashColor: Theme.of(context).colorScheme.primary.withAlpha((0.2 * 255).toInt()),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(

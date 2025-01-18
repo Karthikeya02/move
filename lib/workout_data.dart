@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 // Define the Exercise class
 class Exercise {
@@ -57,33 +58,33 @@ class Workout {
 // Create fake data
 final List<Workout> workouts = [
   Workout(
-    date: DateTime(2025, 1, 1),
+    date: DateTime(2025, 1, 15),
     results: [
-      ExerciseResult(
-        exercise: Exercise(name: 'Push-Ups', targetOutput: 30, unit: 'repetitions'),
-        actualOutput: 25,
-      ),
-      ExerciseResult(
-        exercise: Exercise(name: 'Plank', targetOutput: 60, unit: 'seconds'),
-        actualOutput: 50,
-      ),
-    ],
-  ),
-  Workout(
-    date: DateTime(2025, 1, 2),
-    results: [
-      ExerciseResult(
-        exercise: Exercise(name: 'Running', targetOutput: 1000, unit: 'meters'),
-        actualOutput: 950,
-      ),
       ExerciseResult(
         exercise: Exercise(name: 'Push-Ups', targetOutput: 30, unit: 'repetitions'),
         actualOutput: 28,
       ),
+      ExerciseResult(
+        exercise: Exercise(name: 'Plank', targetOutput: 60, unit: 'seconds'),
+        actualOutput: 65,
+      ),
     ],
   ),
   Workout(
-    date: DateTime(2025, 1, 3),
+    date: DateTime(2025, 1, 16),
+    results: [
+      ExerciseResult(
+        exercise: Exercise(name: 'Running', targetOutput: 1000, unit: 'meters'),
+        actualOutput: 979,
+      ),
+      ExerciseResult(
+        exercise: Exercise(name: 'Push-Ups', targetOutput: 30, unit: 'repetitions'),
+        actualOutput: 32,
+      ),
+    ],
+  ),
+  Workout(
+    date: DateTime(2025, 1, 17),
     results: [
       ExerciseResult(
         exercise: Exercise(name: 'Squats', targetOutput: 40, unit: 'repetitions'),
@@ -115,7 +116,7 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
         ),
         centerTitle: true,
         elevation: 4,
-        backgroundColor: Colors.purple, // Static purple background color
+        backgroundColor: Colors.purple,
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(12.0),
@@ -158,13 +159,30 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
                               Icon(
                                 Icons.check_circle,
                                 color: Colors.green,
+                              )
+                            else
+                              Icon(
+                                Icons.close,
+                                color: Colors.red,
                               ),
                             const SizedBox(width: 8),
                             Icon(
-                              isExpanded
-                                  ? Icons.arrow_drop_up
-                                  : Icons.arrow_drop_down,
-                              color: Theme.of(context).colorScheme.primary,
+                              isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                            ),
+                            const SizedBox(width: 8),
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => WorkoutGraphPage(workout: workout),
+                                  ),
+                                );
+                              },
+                              child: Icon(
+                                Icons.arrow_forward,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
                           ],
                         ),
@@ -221,6 +239,88 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class WorkoutGraphPage extends StatelessWidget {
+  final Workout workout;
+
+  const WorkoutGraphPage({Key? key, required this.workout}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Workout Details',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.purple,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Workout on ${workout.date.toLocal().toString().split(' ')[0]}',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ListView.builder(
+                itemCount: workout.results.length,
+                itemBuilder: (context, index) {
+                  final result = workout.results[index];
+                  final progress = min(1, result.actualOutput / result.exercise.targetOutput);
+
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(result.exercise.name),
+                                Text(
+                                  'Target: ${result.exercise.targetOutput} ${result.exercise.unit}, Achieved: ${result.actualOutput} ${result.exercise.unit}',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 100,
+                            width: 100,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                CircularProgressIndicator(
+                                  value: progress.toDouble(),
+                                  strokeWidth: 4,
+                                  backgroundColor: Colors.grey.shade300,
+                                  color: Colors.purple,
+                                ),
+                                Text(
+                                  '${(progress * 100).toStringAsFixed(0)}%',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

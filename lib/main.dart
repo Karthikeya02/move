@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'workout_data.dart';
+import 'pages/workout_history_page.dart'; // Update import path
 
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: WorkoutHistoryPage(),
+    home: WorkoutHistoryPage(), // Entry point updated to use the new structure
   ));
 }
-

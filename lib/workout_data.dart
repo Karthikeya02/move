@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-// Define the Exercise class
+// Exercise class
 class Exercise {
   final String name;
   final double targetOutput;
-  final String unit; // Either 'seconds', 'repetitions', or 'meters'
+  final String unit;
 
   const Exercise({
     required this.name,
@@ -19,7 +19,7 @@ class Exercise {
   }
 }
 
-// Define the ExerciseResult class
+// ExerciseResult class
 class ExerciseResult {
   final Exercise exercise;
   final double actualOutput;
@@ -55,7 +55,7 @@ class Workout {
   }
 }
 
-// Create fake data
+// Fake data
 final List<Workout> workouts = [
   Workout(
     date: DateTime(2025, 1, 15),
@@ -116,7 +116,7 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
         ),
         centerTitle: true,
         elevation: 4,
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.pink,
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(12.0),
@@ -149,11 +149,15 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Workout on ${workout.date.toLocal().toString().split(' ')[0]}',
-                          style: Theme.of(context).textTheme.titleMedium,
+                        Expanded(
+                          child: Text(
+                            'Workout on ${workout.date.toLocal().toString().split(' ')[0]}',
+                            style: Theme.of(context).textTheme.titleMedium,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             if (allSuccessful)
                               Icon(
@@ -170,20 +174,6 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
                               isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
                             ),
                             const SizedBox(width: 8),
-                            InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => WorkoutGraphPage(workout: workout),
-                                  ),
-                                );
-                              },
-                              child: Icon(
-                                Icons.arrow_forward,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
                           ],
                         ),
                       ],
@@ -208,18 +198,20 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      result.exercise.name,
-                                      style: Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                    Text(
-                                      'Target: ${result.exercise.targetOutput} ${result.exercise.unit}, Achieved: ${result.actualOutput} ${result.exercise.unit}',
-                                      style: Theme.of(context).textTheme.bodySmall,
-                                    ),
-                                  ],
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        result.exercise.name,
+                                        style: Theme.of(context).textTheme.bodyLarge,
+                                      ),
+                                      Text(
+                                        'Target: ${result.exercise.targetOutput} ${result.exercise.unit}, Achieved: ${result.actualOutput} ${result.exercise.unit}',
+                                        style: Theme.of(context).textTheme.bodySmall,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 Icon(
                                   isSuccess ? Icons.check_circle : Icons.error,
@@ -242,97 +234,4 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
       ),
     );
   }
-}
-
-class WorkoutGraphPage extends StatelessWidget {
-  final Workout workout;
-
-  const WorkoutGraphPage({Key? key, required this.workout}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Workout Details',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.purple,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Workout on ${workout.date.toLocal().toString().split(' ')[0]}',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: workout.results.length,
-                itemBuilder: (context, index) {
-                  final result = workout.results[index];
-                  final progress = min(1, result.actualOutput / result.exercise.targetOutput);
-
-                  return Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(result.exercise.name),
-                                Text(
-                                  'Target: ${result.exercise.targetOutput} ${result.exercise.unit}, Achieved: ${result.actualOutput} ${result.exercise.unit}',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 100,
-                            width: 100,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                CircularProgressIndicator(
-                                  value: progress.toDouble(),
-                                  strokeWidth: 4,
-                                  backgroundColor: Colors.grey.shade300,
-                                  color: Colors.purple,
-                                ),
-                                Text(
-                                  '${(progress * 100).toStringAsFixed(0)}%',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-    ),
-    home: WorkoutHistoryPage(),
-  ));
 }

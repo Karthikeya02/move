@@ -5,6 +5,7 @@ import '../main.dart';
 import '../models/workout_model.dart'; // Workout model class
 
 
+
 class WorkoutHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class WorkoutHistoryPage extends StatelessWidget {
         itemBuilder: (context, index) {
           final workout = workouts[index];
           return ListTile(
-            title: Text(workout.date),
+            title: Text((workout.date)),
             subtitle: Text('Total Exercises: ${workout.exercises.length}'),
             onTap: () {
               Navigator.push(

@@ -13,12 +13,12 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => WorkoutProvider(),
       child: MaterialApp(
-        title: 'Workout Tracker',
+        title: 'Move',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.teal,
+          primarySwatch: Colors.deepPurple,
           appBarTheme: AppBarTheme(
-            backgroundColor: Colors.teal, //AppBar teal color
+            backgroundColor: Colors.deepOrangeAccent, //AppBar teal color
             titleTextStyle: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w600,

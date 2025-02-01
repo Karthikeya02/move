@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:move/widgets/seconds_input_widget.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
 import '../models/workout_model.dart';
 import '../score_widget.dart';
 import '../widgets/meters_input_widget.dart';
 import '../widgets/numeric_widget.dart';
+import '../widgets/seconds_input_widget.dart';
 import 'dart:core';
 
 
@@ -29,21 +31,21 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
   final Map<int, int> exerciseOutputs = {}; // Stores user inputs
 
   /// **Saves the recorded workout and updates the global state**
-  void _saveWorkout() {
-    final newWorkout = Workout(
-      date: DateTime.now().toString(), // Ensure DateTime format
-      exercises: exercises.map((exercise) {
-        int index = exercises.indexOf(exercise);
-        return ExerciseResult(
-          exercise.name,
-          exercise.type,
-          exerciseOutputs[index] ?? 0, // Default to 0 if no input
-        );
-      }).toList(),
+  void _saveWorkout() {  // Generate the ExerciseResult list based on the user's inputs
+    final exerciseResults = exercises.map((exercise) {
+    final achievedOutput = exerciseOutputs[exercises.indexOf(exercise)] ?? 0;
+    return ExerciseResult(exercise.name,
+      exercise.type,
+      achievedOutput,);  }).toList();
+
+    final workout = Workout(
+      date: DateTime.now().toString(),
+      exerciseResults: exerciseResults,
+      exercises: exercises, // Include the exercises for reference
     );
 
     // Save workout to state
-    Provider.of<WorkoutProvider>(context, listen: false).addWorkout(newWorkout);
+    Provider.of<WorkoutProvider>(context, listen: false).addWorkout(workout);
 
     // Navigate back
     Navigator.pop(context);
@@ -107,6 +109,11 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
   Widget _buildInputWidget(int index, String type) {
     if (type == 'Meters') {
       return MetersInputWidget(
+        onInputChanged: (value) => setState(() => exerciseOutputs[index] = value),
+      );
+    }
+    else if (type == 'Seconds'){
+      return SecondsInputWidget(
         onInputChanged: (value) => setState(() => exerciseOutputs[index] = value),
       );
     }

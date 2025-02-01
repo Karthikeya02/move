@@ -24,7 +24,7 @@ class WorkoutDetails extends StatelessWidget {
                 final exercise = workout.exercises[index];
                 return ListTile(
                   title: Text(exercise.name),
-                  subtitle: Text('Output: ${exercise.output} ${exercise.type}'),
+                  subtitle: Text('Output: ${workout.exerciseResults[index].output} ${exercise.type}'),
                 );
               },
             ),
@@ -34,7 +34,7 @@ class WorkoutDetails extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () => _showScore(context), // Show bottom sheet when pressed
-              child: Text('View Performance'),
+              child: Text('View Score'),
             ),
           ),
         ],

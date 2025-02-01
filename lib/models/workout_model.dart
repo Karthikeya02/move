@@ -1,10 +1,12 @@
 class Workout {
   final String date; // Date when the workout was recorded
-  final List<ExerciseResult> exercises;
+  final List<ExerciseResult> exerciseResults;
+  final List<Exercise> exercises;
 
   Workout({
     required this.date,
-    required this.exercises,
+    required this.exerciseResults,
+  required this.exercises,
   });
 }
 

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:move/workout_details/workout_recording_page.dart';
 import '../main.dart';
-import '../models/workout_model.dart';
 import '../score_widget.dart';
 import 'package:intl/intl.dart';
+import 'package:move/workout_details/workout_details.dart';
 
 class WorkoutHistoryPage extends StatelessWidget {
   @override
@@ -31,7 +31,7 @@ class WorkoutHistoryPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => WorkoutDetailsPage(workout),
+                        builder: (context) => WorkoutDetails(workout),
                       ),
                     );
                   },
@@ -83,25 +83,5 @@ class WorkoutHistoryPage extends StatelessWidget {
   }
 }
 
-class WorkoutDetailsPage extends StatelessWidget {
-  final Workout workout;
 
-  WorkoutDetailsPage(this.workout);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Workout Details')),
-      body: ListView.builder(
-        itemCount: workout.exercises.length,
-        itemBuilder: (context, index) {
-          final exercise = workout.exercises[index];
-          return ListTile(
-            title: Text(exercise.name),
-            subtitle: Text('Output: ${exercise.output} ${exercise.type}'),
-          );
-        },
-      ),
-    );
-  }
-}

@@ -73,7 +73,7 @@ class _NumericInputWidgetState extends State<NumericInputWidget> {
               borderRadius: BorderRadius.circular(30),
               child: CircleAvatar(
                 radius: 15,
-                backgroundColor: Colors.teal,
+                backgroundColor: Colors.lightBlueAccent,
                 child: Icon(
                   Icons.remove,
                   color: Colors.white,
@@ -95,7 +95,7 @@ class _NumericInputWidgetState extends State<NumericInputWidget> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.teal,
+                  color: Colors.lightBlueAccent,
                 ),
                 decoration: InputDecoration(
                   labelText: widget.label,
@@ -103,11 +103,11 @@ class _NumericInputWidgetState extends State<NumericInputWidget> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.teal, width: 2),
+                    borderSide: BorderSide(color: Colors.lightBlueAccent, width: 2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.teal.shade200, width: 2),
+                    borderSide: BorderSide(color: Colors.lightBlueAccent.shade200, width: 2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   contentPadding: EdgeInsets.symmetric(vertical: 15),
@@ -123,7 +123,7 @@ class _NumericInputWidgetState extends State<NumericInputWidget> {
               borderRadius: BorderRadius.circular(30),
               child: CircleAvatar(
                 radius: 15,
-                backgroundColor: Colors.teal,
+                backgroundColor: Colors.lightBlueAccent,
                 child: Icon(
                   Icons.add,
                   color: Colors.white,

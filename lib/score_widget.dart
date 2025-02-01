@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
 
-
 class ScoreWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -29,6 +28,7 @@ class ScoreWidget extends StatelessWidget {
         ),
       );
     }
+
     // Get the date 7 days ago and today
     DateTime sevenDaysAgo = DateTime.now().subtract(Duration(days: 7));
     DateTime today = DateTime.now();
@@ -45,9 +45,9 @@ class ScoreWidget extends StatelessWidget {
 
       // Only consider workouts from the last 7 days
       if (workoutDate.isAfter(sevenDaysAgo)) {
-        for (var exerciseResult in workout.exercises) {
+        for (var exerciseResult in workout.exerciseResults) {
           int target =
-              getTargetForExercise(exerciseResult.name, exerciseResult.type);
+          getTargetForExercise(exerciseResult.name, exerciseResult.type);
 
           // If it's within the last 7 days
           totalExercisesLast7Days++;
@@ -70,24 +70,40 @@ class ScoreWidget extends StatelessWidget {
       }
     }
 
-    // Calculate the performance score for the past 7 days
-    double performanceScore =
-        (totalExercisesLast7Days > 0 && exercisesMeetingTargetLast7Days > 0)
-            ? (exercisesMeetingTargetLast7Days / totalExercisesLast7Days)
-            : 0;
+    // DEBUGGING: Print values for validation
+    print('Total Exercises Last 7 Days: $totalExercisesLast7Days');
+    print('Exercises Meeting Target Last 7 Days: $exercisesMeetingTargetLast7Days');
+    print('Total Exercises Today: $totalExercisesToday');
+    print('Exercises Meeting Target Today: $exercisesMeetingTargetToday');
 
-    // Calculate today's performance score
-    double todaysPerformanceScore =
-        (totalExercisesToday > 0 && exercisesMeetingTargetToday > 0)
-            ? (exercisesMeetingTargetToday / totalExercisesToday)
-            : 0;
+    // Declare performance scores
+    double performanceScore = 0;
+    double todayPerformanceScore = 0;
 
-    // Format the scores to be more user-friendly
-    String displayPerformanceScore =
-        performanceScore > 0 ? performanceScore.toStringAsFixed(2) : '0';
-    String displayTodaysPerformanceScore = todaysPerformanceScore > 0
-        ? todaysPerformanceScore.toStringAsFixed(2)
-        : '0';
+// Only calculate the performance score for the last 7 days if there are exercises that meet the target
+    if (totalExercisesLast7Days > 0) {
+      // If exercises meeting target > 0, calculate the score
+      if (exercisesMeetingTargetLast7Days > 0) {
+        performanceScore = exercisesMeetingTargetLast7Days / totalExercisesLast7Days;
+      } else {
+        performanceScore = 0; // If no exercises met the target, set to 0
+      }
+    }
+
+// Only calculate today's performance score if there are exercises that meet the target
+    if (totalExercisesToday > 0) {
+      // If exercises meeting target > 0, calculate the score
+      if (exercisesMeetingTargetToday > 0) {
+        todayPerformanceScore = exercisesMeetingTargetToday / totalExercisesToday;
+      } else {
+        todayPerformanceScore = 0; // If no exercises met the target, set to 0
+      }
+    }
+
+// Format the scores to be more user-friendly
+    String displayPerformanceScore = performanceScore == 0 ? '0' : performanceScore.toStringAsFixed(2);
+    String displayTodayPerformanceScore = todayPerformanceScore == 0 ? '0' : todayPerformanceScore.toStringAsFixed(2);
+
 
     return Card(
       elevation: 5,
@@ -101,7 +117,7 @@ class ScoreWidget extends StatelessWidget {
           children: [
             Text('Overall Score: $displayPerformanceScore'),
             Divider(), // Add a divider to separate the two scores
-            Text('Today\'s Score: $displayTodaysPerformanceScore'),
+            Text('Today\'s Score: $displayTodayPerformanceScore'),
           ],
         ),
       ),
@@ -115,30 +131,28 @@ class ScoreWidget extends StatelessWidget {
         date1.day == date2.day;
   }
 }
+
 int getTargetForExercise(String exerciseName, String exerciseType) {
   // Define target values based on exercise type or name
   if (exerciseType == 'Reps') {
     if (exerciseName == 'Push-ups') {
-      return 34;
+      return 12;
     } else if (exerciseName == 'Squats') {
-      return 56;
-    }
-    else if (exerciseName == 'Bicep Curls') {
-      return 5;
+      return 12;
     }
   } else if (exerciseType == 'Seconds') {
     if (exerciseName == 'Plank') {
-      return 60;
-    } else if (exerciseName == 'Cardio') {
-      return 120;
+      return 12;
     }
   } else if (exerciseType == 'Meters') {
-    if (exerciseName == 'Running') {
-      return 100;
+    if (exerciseName == 'Surfing') {
+      return 60;
+    }
+    else if (exerciseName == 'Running') {
+      return 120;
     } else if (exerciseName == 'Cycling') {
-      return 500;
+      return 250;
     }
   }
-
   return 0;
 }

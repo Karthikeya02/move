@@ -16,9 +16,9 @@ class MyApp extends StatelessWidget {
         title: 'Move',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.deepPurple,
+          primarySwatch: Colors.pink,
           appBarTheme: AppBarTheme(
-            backgroundColor: Colors.deepOrangeAccent, //AppBar teal color
+            backgroundColor: Colors.pinkAccent, //AppBar teal color
             titleTextStyle: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.w600,

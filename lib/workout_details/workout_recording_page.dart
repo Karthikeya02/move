@@ -6,7 +6,6 @@ import '../models/workout_model.dart';
 import '../score_widget.dart';
 import '../widgets/meters_input_widget.dart';
 import '../widgets/numeric_widget.dart';
-import '../widgets/seconds_input_widget.dart';
 import 'dart:core';
 
 

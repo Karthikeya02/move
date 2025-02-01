@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:move/main.dart'; // Ensure the widget is imported
+import '../main.dart';
 import '../models/workout_model.dart';
+import '../score_widget.dart';
 import '../widgets/meters_input_widget.dart';
 import '../widgets/numeric_widget.dart';
+import 'dart:core';
+
 
 class WorkoutRecordingPage extends StatefulWidget {
+  const WorkoutRecordingPage({super.key});
+
   @override
   _WorkoutRecordingPageState createState() => _WorkoutRecordingPageState();
 }
@@ -13,38 +18,55 @@ class WorkoutRecordingPage extends StatefulWidget {
 class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
   final List<Exercise> exercises = [
     Exercise('Push-ups', 'Reps'),
-    Exercise('Running', 'Meters'),
-    Exercise('Plank', 'Seconds'),
     Exercise('Squats', 'Reps'),
+    Exercise('Plank', 'Seconds'),
+    Exercise('Running', 'Meters'),
     Exercise('Cycling', 'Meters'),
-    Exercise('Cardio', 'Seconds'),
+    Exercise('Swimming', 'Meters'),
+    Exercise('Surfing', 'Meters'),
   ];
 
-  final Map<int, int> exerciseOutputs = {}; // Map to store inputs for each exercise
+  final Map<int, int> exerciseOutputs = {}; // Stores user inputs
 
+  /// **Saves the recorded workout and updates the global state**
   void _saveWorkout() {
-    final workout = Workout(
-      date: DateTime.now().toString(),
-      exercises: exercises
-          .map((exercise) => ExerciseResult(
-        exercise.name,
-        exercise.type,
-        exerciseOutputs[exercises.indexOf(exercise)] ?? 0,
-      ))
-          .toList(),
+    final newWorkout = Workout(
+      date: DateTime.now().toString(), // Ensure DateTime format
+      exercises: exercises.map((exercise) {
+        int index = exercises.indexOf(exercise);
+        return ExerciseResult(
+          exercise.name,
+          exercise.type,
+          exerciseOutputs[index] ?? 0, // Default to 0 if no input
+        );
+      }).toList(),
     );
 
-    // Add workout to shared state using Provider
-    Provider.of<WorkoutProvider>(context, listen: false).addWorkout(workout);
+    // Save workout to state
+    Provider.of<WorkoutProvider>(context, listen: false).addWorkout(newWorkout);
 
-    // Navigate back to WorkoutHistoryPage after saving
+    // Navigate back
     Navigator.pop(context);
+  }
+
+  /// **Displays the ScoreWidget in a bottom sheet**
+  void _showScore(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.all(10),
+        child: ScoreWidget(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Record Workout')),
+      appBar: AppBar(title: const Text('Record Workout')),
       body: ListView.builder(
         itemCount: exercises.length,
         itemBuilder: (context, index) {
@@ -55,32 +77,43 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Display the exercise name
-                Text(exercise.name, style: TextStyle(fontSize: 18)),
-                if (exercise.type == 'Meters')
-                  MetersInputWidget(
-                    onInputChanged: (value) {
-                      exerciseOutputs[index] = value;
-                    },
-                  ),
-                // Use NumericInputWidget for all types of input (seconds, meters, reps)
-                if (exercise.type == 'Reps' || exercise.type == 'Seconds')
-                  NumericInputWidget(
-                    label: exercise.type,
-                    initialValue: 0,
-                    onInputChanged: (value) {
-                      exerciseOutputs[index] = value;
-                  },
-                ),
+                Text(exercise.name, style: const TextStyle(fontSize: 18)),
+                _buildInputWidget(index, exercise.type),
               ],
             ),
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _saveWorkout,
-        child: Icon(Icons.save),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.extended(
+            onPressed: () => _showScore(context),
+            icon: Icon(Icons.bar_chart),
+            label: Text("View Score"),
+            backgroundColor: Colors.blueAccent,
+          ),
+          SizedBox(height: 10), // Spacing between buttons
+          FloatingActionButton(
+            onPressed: _saveWorkout,
+            child: const Icon(Icons.save),
+          ),
+        ],
       ),
+    );
+  }
+
+  /// **Returns the appropriate input widget based on exercise type**
+  Widget _buildInputWidget(int index, String type) {
+    if (type == 'Meters') {
+      return MetersInputWidget(
+        onInputChanged: (value) => setState(() => exerciseOutputs[index] = value),
+      );
+    }
+    return NumericInputWidget(
+      label: type,
+      initialValue: 0,
+      onInputChanged: (value) => setState(() => exerciseOutputs[index] = value),
     );
   }
 }

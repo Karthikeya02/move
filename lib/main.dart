@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
           appBarTheme: AppBarTheme(
             backgroundColor: Colors.deepOrangeAccent, //AppBar teal color
             titleTextStyle: TextStyle(
-              fontSize: 22,
+              fontSize: 25,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
 }
 
 class WorkoutProvider with ChangeNotifier {
-  List<Workout> _workouts = [];
+  final List<Workout> _workouts = [];
 
   List<Workout> get workouts => _workouts;
 

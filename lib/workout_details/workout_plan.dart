@@ -7,7 +7,7 @@ class WorkoutPlan {
 
 class Exercise {
   String name;
-  String type; // Can be 'seconds', 'reps', or 'meters'
+  String type; // Measurement: 'seconds', 'reps', or 'meters'
 
   Exercise(this.name, this.type);
 }

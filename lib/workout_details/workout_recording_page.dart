@@ -30,7 +30,7 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
   final Map<int, int> exerciseOutputs = {}; // Stores user inputs
 
   /// **Saves the recorded workout and updates the global state**
-  void _saveWorkout() {  // Generate the ExerciseResult list based on the user's inputs
+  void _saveWorkout() {
     final exerciseResults = exercises.map((exercise) {
     final achievedOutput = exerciseOutputs[exercises.indexOf(exercise)] ?? 0;
     return ExerciseResult(exercise.name,
@@ -40,7 +40,7 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
     final workout = Workout(
       date: DateTime.now().toString(),
       exerciseResults: exerciseResults,
-      exercises: exercises, // Include the exercises for reference
+      exercises: exercises,
     );
 
     // Save workout to state

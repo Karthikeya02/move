@@ -18,14 +18,15 @@ class WorkoutRecordingPage extends StatefulWidget {
 
 class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
   final List<Exercise> exercises = [
-    Exercise('Push-ups', 'Reps'),
-    Exercise('Squats', 'Reps'),
-    Exercise('Plank', 'Seconds'),
-    Exercise('Running', 'Meters'),
-    Exercise('Cycling', 'Meters'),
-    Exercise('Swimming', 'Meters'),
-    Exercise('Surfing', 'Meters'),
+    Exercise(name: 'Push-ups', target: 0, unit: 'Reps', type: 'Reps'),
+    Exercise(name: 'Squats', target: 0, unit: 'Reps', type: 'Reps'),
+    Exercise(name: 'Plank', target: 0, unit: 'Seconds', type: 'Seconds'),
+    Exercise(name: 'Running', target: 0, unit: 'Meters', type: 'Meters'),
+    Exercise(name: 'Cycling', target: 0, unit: 'Meters', type: 'Meters'),
+    Exercise(name: 'Swimming', target: 0, unit: 'Meters', type: 'Meters'),
+    Exercise(name: 'Surfing', target: 0, unit: 'Meters', type: 'Meters'),
   ];
+
 
   final Map<int, int> exerciseOutputs = {}; // Stores user inputs
 
@@ -33,15 +34,21 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
   void _saveWorkout() {
     final exerciseResults = exercises.map((exercise) {
     final achievedOutput = exerciseOutputs[exercises.indexOf(exercise)] ?? 0;
-    return ExerciseResult(exercise.name,
-      exercise.type,
-      achievedOutput,);  }).toList();
+    return ExerciseResult(
+      name: exercise.name,
+      unit: exercise.unit,
+      output: achievedOutput,
+    );
+
+    }).toList();
 
     final workout = Workout(
-      date: DateTime.now().toString(),
-      exerciseResults: exerciseResults,
+      name: "Recorded Workout", // Provide a name since it's required
+      date: DateTime.now().toIso8601String(), // Keep the current date
       exercises: exercises,
+      exerciseResults: exerciseResults,
     );
+
 
     // Save workout to state
     Provider.of<WorkoutProvider>(context, listen: false).addWorkout(workout);

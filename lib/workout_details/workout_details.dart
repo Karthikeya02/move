@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:move/score_widget.dart';
-import '../models/workout_model.dart'; // Import your workout model to access Workout and ExerciseResult classes
+import '../models/workout_model.dart';
 
 class WorkoutDetails extends StatelessWidget {
   final Workout workout;

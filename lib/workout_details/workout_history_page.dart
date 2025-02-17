@@ -5,6 +5,7 @@ import '../main.dart';
 import '../score_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:move/workout_details/workout_details.dart';
+import 'download_workout_page.dart';
 
 class WorkoutHistoryPage extends StatelessWidget {
   @override
@@ -24,7 +25,7 @@ class WorkoutHistoryPage extends StatelessWidget {
                 final workout = workouts[index];
                 return ListTile(
                   title: Text(
-                      DateFormat('yyyy-MM-dd h:mm a').format(DateTime.parse(workout.date)), // Format DateTime
+                    DateFormat('yyyy-MM-dd h:mm a').format(DateTime.parse(workout.date)), // Format DateTime
                   ),
                   subtitle: Text('Exercises: ${workout.exercises.length}'),
                   onTap: () {
@@ -63,6 +64,20 @@ class WorkoutHistoryPage extends StatelessWidget {
             },
             child: Icon(Icons.add),
           ),
+          SizedBox(height: 10),
+          FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DownloadWorkoutPage(),
+                ),
+              );
+            },
+            icon: Icon(Icons.download),
+            label: Text("Download Workout Plan"),
+            backgroundColor: Colors.green,
+          ),
         ],
       ),
     );
@@ -82,6 +97,3 @@ class WorkoutHistoryPage extends StatelessWidget {
     );
   }
 }
-
-
-

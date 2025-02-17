@@ -23,7 +23,7 @@ class _MetersInputWidgetState extends State<MetersInputWidget> {
       ],
       decoration: InputDecoration(labelText: 'Enter distance in meters'),
       onChanged: (value) {
-        widget.onInputChanged(int.tryParse(value) ?? 0);
+        widget.onInputChanged(int.tryParse(value) ?? 0);  // Parse integer or default to 0
       },
     );
   }

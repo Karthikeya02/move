@@ -28,10 +28,10 @@ class _SecondsInputWidgetState extends State<SecondsInputWidget> {
           value: _currentValue.toDouble(),
           min: widget.minSeconds.toDouble(),
           max: widget.maxSeconds.toDouble(),
-          divisions: (widget.maxSeconds - widget.minSeconds) ~/ 5, // Adjust granularity. Can be adjusted to 1 if needed. Kept 5 for simplicity
+          divisions: (widget.maxSeconds - widget.minSeconds) ~/ 5, // Adjust granularity
           label: '$_currentValue sec',
-          activeColor: Colors.orange,
-          inactiveColor: Colors.orange.shade200,
+          activeColor: Colors.orange, // Orange color for the active track
+          inactiveColor: Colors.orange.shade200, // Lighter orange for inactive part
           onChanged: (value) {
             setState(() {
               _currentValue = value.round();

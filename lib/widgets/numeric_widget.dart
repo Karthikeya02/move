@@ -24,23 +24,23 @@ class _NumericInputWidgetState extends State<NumericInputWidget> {
   void initState() {
     super.initState();
     value = widget.initialValue;
-    _controller.text = value.toString();
+    _controller.text = value.toString(); // Initialize controller with value
   }
 
   // Increment value
   void _increment() {
     setState(() {
       value++;
-      _controller.text = value.toString();
+      _controller.text = value.toString(); // Update controller with new value
     });
-    widget.onInputChanged(value);
+    widget.onInputChanged(value); // Notify parent of change
   }
 
   // Decrement value
   void _decrement() {
     setState(() {
       if (value > 0) value--; // Prevent going below zero for positive values
-      _controller.text = value.toString();
+      _controller.text = value.toString(); // Update controller with new value
     });
     widget.onInputChanged(value); // Notify parent of change
   }
@@ -48,10 +48,10 @@ class _NumericInputWidgetState extends State<NumericInputWidget> {
   // Handle user input change
   void _onChanged(String input) {
     setState(() {
-      value = int.tryParse(input) ?? 0;
-      _controller.text = value.toString();
+      value = int.tryParse(input) ?? 0; // Parse the input and update value
+      _controller.text = value.toString(); // Update the controller with parsed value
     });
-    widget.onInputChanged(value);
+    widget.onInputChanged(value); // Notify parent of change
   }
 
   @override
@@ -73,7 +73,7 @@ class _NumericInputWidgetState extends State<NumericInputWidget> {
               borderRadius: BorderRadius.circular(30),
               child: CircleAvatar(
                 radius: 15,
-                backgroundColor: Colors.lightBlueAccent ,
+                backgroundColor: Colors.lightBlueAccent,
                 child: Icon(
                   Icons.remove,
                   color: Colors.white,

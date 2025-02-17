@@ -10,6 +10,8 @@ class WorkoutDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Exercise> exercises = workout.getExerciseList(); // Decode exercises from JSON
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Workout Details'),
@@ -19,12 +21,12 @@ class WorkoutDetails extends StatelessWidget {
           // ListView.builder to display the exercises
           Expanded(
             child: ListView.builder(
-              itemCount: workout.exercises.length,
+              itemCount: exercises.length,
               itemBuilder: (context, index) {
-                final exercise = workout.exercises[index];
+                final exercise = exercises[index];
                 return ListTile(
                   title: Text(exercise.name),
-                  subtitle: Text('Output: ${workout.exerciseResults[index].output} ${exercise.type}'),
+                  subtitle: Text('Target: ${exercise.target} ${exercise.unit}'),
                 );
               },
             ),

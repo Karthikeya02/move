@@ -1,99 +1,141 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:move/workout_details/workout_recording_page.dart';
-import '../main.dart';
-import '../score_widget.dart';
-import 'package:intl/intl.dart';
-import 'package:move/workout_details/workout_details.dart';
-import 'download_workout_page.dart';
+import 'dart:convert';
+import '../database/database.dart';
+import '../models/workout_model.dart';
 
-class WorkoutHistoryPage extends StatelessWidget {
+class WorkoutHistoryPage extends StatefulWidget {
+  @override
+  _WorkoutHistoryPageState createState() => _WorkoutHistoryPageState();
+}
+
+class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
+  late Future<List<Workout>> _workouts;
+
+  @override
+  void initState() {
+    super.initState();
+    _workouts = _fetchSavedWorkouts();
+  }
+
+  Future<List<Workout>> _fetchSavedWorkouts() async {
+    try {
+      final database = await getDatabase();
+      final workoutDao = database.workoutDao;
+      return await workoutDao.getAllWorkouts();
+    } catch (e) {
+      print("Error fetching workouts: $e");
+      return []; // Return an empty list if there's an error
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final workouts = Provider.of<WorkoutProvider>(context).workouts;
-
     return Scaffold(
-      appBar: AppBar(title: Text('Workout History')),
-      body: Column(
-        children: [
-          Expanded(
-            child: workouts.isEmpty
-                ? Center(child: Text('No workouts recorded yet.'))
-                : ListView.builder(
+      appBar: AppBar(title: Text("Workout History")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FutureBuilder<List<Workout>>(
+          future: _workouts,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator()); // Show loading indicator
+            }
+
+            if (snapshot.hasError) {
+              return Center(child: Text("Error loading workouts")); // Show error message
+            }
+
+            final workouts = snapshot.data ?? [];
+
+            if (workouts.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("No workouts recorded yet!", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/download_workout'); // Ensure route is correct
+                      },
+                      child: Text("Download Workout Plan"),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return ListView.builder(
               itemCount: workouts.length,
               itemBuilder: (context, index) {
                 final workout = workouts[index];
-                return ListTile(
-                  title: Text(
-                    DateFormat('yyyy-MM-dd h:mm a').format(DateTime.parse(workout.date)), // Format DateTime
+                return Card(
+                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListTile(
+                    title: Text(workout.name, style: TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text("Date: ${workout.date}"),
+                    onTap: () {
+                      _showWorkoutDetails(workout);
+                    },
                   ),
-                  subtitle: Text('Exercises: ${workout.exercises.length}'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => WorkoutDetails(workout),
-                      ),
-                    );
-                  },
                 );
               },
-            ),
-          ),
-          SizedBox(height: 10), // Spacing
-        ],
+            );
+          },
+        ),
       ),
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           FloatingActionButton.extended(
-            onPressed: () => _showScore(context),
-            icon: Icon(Icons.bar_chart),
-            label: Text("View Score"),
-            backgroundColor: Colors.blueAccent,
+            onPressed: () {
+              Navigator.pushNamed(context, '/download_workout');
+            },
+            icon: Icon(Icons.download),
+            label: Text("Download Workout"),
+            backgroundColor: Colors.green,
           ),
           SizedBox(height: 10),
           FloatingActionButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => WorkoutRecordingPage(),
-                ),
-              );
+              Navigator.pushNamed(context, '/record_workout');
             },
             child: Icon(Icons.add),
-          ),
-          SizedBox(height: 10),
-          FloatingActionButton.extended(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DownloadWorkoutPage(),
-                ),
-              );
-            },
-            icon: Icon(Icons.download),
-            label: Text("Download Workout Plan"),
-            backgroundColor: Colors.green,
           ),
         ],
       ),
     );
   }
 
-  /// **Displays the ScoreWidget in a bottom sheet**
-  void _showScore(BuildContext context) {
-    showModalBottomSheet(
+  void _showWorkoutDetails(Workout workout) {
+    final List<dynamic> exercises = jsonDecode(workout.exercises);
+    showDialog(
       context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.all(10),
-        child: ScoreWidget(),
-      ),
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(workout.name),
+          content: exercises.isNotEmpty
+              ? Column(
+            mainAxisSize: MainAxisSize.min,
+            children: exercises.map((exerciseJson) {
+              final exercise = Exercise.fromJson(exerciseJson);
+              return ListTile(
+                title: Text(exercise.name),
+                subtitle: Text("Target: ${exercise.target} ${exercise.unit}"),
+              );
+            }).toList(),
+          )
+              : Text("No exercises recorded."),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

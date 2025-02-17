@@ -7,6 +7,7 @@ import '../score_widget.dart';
 import '../widgets/meters_input_widget.dart';
 import '../widgets/numeric_widget.dart';
 import 'dart:core';
+import 'dart:convert';
 
 
 class WorkoutRecordingPage extends StatefulWidget {
@@ -32,22 +33,22 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
 
   /// **Saves the recorded workout and updates the global state**
   void _saveWorkout() {
-    final exerciseResults = exercises.map((exercise) {
-    final achievedOutput = exerciseOutputs[exercises.indexOf(exercise)] ?? 0;
-    return ExerciseResult(
-      name: exercise.name,
-      unit: exercise.unit,
-      output: achievedOutput,
-    );
-
+    final recordedExercises = exercises.map((exercise) {
+      final achievedOutput = exerciseOutputs[exercises.indexOf(exercise)] ?? 0;
+      return Exercise(
+        name: exercise.name,
+        target: achievedOutput, // Use achievedOutput instead of exerciseResults
+        unit: exercise.unit,
+        type: exercise.type,
+      );
     }).toList();
 
     final workout = Workout(
-      name: "Recorded Workout", // Provide a name since it's required
-      date: DateTime.now().toIso8601String(), // Keep the current date
-      exercises: exercises,
-      exerciseResults: exerciseResults,
+      name: "Recorded Workout", // Default name for recorded workouts
+      date: DateTime.now().toIso8601String(),
+      exercises: jsonEncode(recordedExercises.map((e) => e.toJson()).toList()), // Store as JSON string
     );
+
 
 
     // Save workout to state

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
 
+
 class ScoreWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -45,31 +46,25 @@ class ScoreWidget extends StatelessWidget {
 
 
       if (workoutDate.isAfter(sevenDaysAgo)) {
-        for (var exerciseResult in workout.exerciseResults) {
-          int target =
-          getTargetForExercise(exerciseResult.name, exerciseResult.type);
+        for (var exercise in workout.getExerciseList()) {
+          int target = getTargetForExercise(exercise.name, exercise.type);
 
           totalExercisesLast7Days++;
 
-
-          if (exerciseResult.output >= target) {
+          if (exercise.target >= target) {  // Compare target instead of output
             exercisesMeetingTargetLast7Days++;
           }
-
 
           if (isSameDay(workoutDate, today)) {
             totalExercisesToday++;
 
-
-            if (exerciseResult.output >= target) {
+            if (exercise.target >= target) {
               exercisesMeetingTargetToday++;
             }
           }
         }
       }
     }
-
-
 
     double performanceScore = 0;
     double todayPerformanceScore = 0;

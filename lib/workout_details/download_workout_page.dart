@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as htmlParser;
 import '../models/workout_model.dart';
+import '../database/database.dart';
 
 class DownloadWorkoutPage extends StatefulWidget {
   @override
@@ -121,12 +122,30 @@ class _DownloadWorkoutPageState extends State<DownloadWorkoutPage> {
     }
   }
 
-  void _saveWorkout() {
-    // Implement logic to save workout locally (e.g., database or file storage)
+  void _saveWorkout() async {
+    if (_workoutPlan == null) return;
+
+    final database = await getDatabase();
+    final workoutDao = database.workoutDao;
+
+
+    List<dynamic> decodedExercises = jsonDecode(_workoutPlan!.exercises);
+    String exercisesJson = jsonEncode(decodedExercises.map((e) => Exercise.fromJson(e).toJson()).toList());
+
+
+    Workout workout = Workout(
+      name: _workoutPlan!.name,
+      date: _workoutPlan!.date,
+      exercises: exercisesJson,
+    );
+
+    await workoutDao.insertWorkout(workout);
+
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Workout plan saved successfully!")),
+      SnackBar(content: Text("Workout plan saved to database!")),
     );
   }
+
 
   void _discardWorkout() {
     setState(() {
@@ -182,14 +201,14 @@ class _DownloadWorkoutPageState extends State<DownloadWorkoutPage> {
               Text("Workout Date: ${_workoutPlan!.date}",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Expanded(
-                child: _workoutPlan!.exercises.isNotEmpty
+                child: _workoutPlan != null && _workoutPlan!.exercises.isNotEmpty
                     ? ListView.builder(
-                  itemCount: _workoutPlan!.exercises.length,
+                  itemCount: _workoutPlan!.getExerciseList().length,
                   itemBuilder: (context, index) {
-                    final exercise = _workoutPlan!.exercises[index];
+                    final exercise = _workoutPlan!.getExerciseList()[index];
                     return ListTile(
                       title: Text(exercise.name),
-                      subtitle: Text("Target: ${exercise.target} ${exercise.unit}"),
+                      subtitle: Text("Target: \${exercise.target} \${exercise.unit}"),
                     );
                   },
                 )

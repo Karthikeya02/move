@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:floor/floor.dart';
 
 @Entity(tableName: 'Workout')
@@ -80,10 +81,49 @@ class Exercise {
   factory Exercise.fromJson(Map<String, dynamic> json) {
     return Exercise(
       name: json['name'] ?? "Unknown",
-      target: (json['target'] is int) ? json['target'] : int.tryParse(json['target'].toString()) ?? 0,
-      actual: (json['actual'] is int) ? json['actual'] : int.tryParse(json['actual'].toString()) ?? 0,
+      target: (json['target'] is int)
+          ? json['target']
+          : int.tryParse(json['target'].toString()) ?? 0,
+      actual: (json['actual'] is int)
+          ? json['actual']
+          : int.tryParse(json['actual'].toString()) ?? 0,
       unit: json['unit'] ?? "",
       type: json['type'] ?? "Unknown",
+    );
+  }
+}
+
+@Entity(tableName: 'workout_plans')
+class WorkoutPlan {
+  @PrimaryKey(autoGenerate: true)
+  final int? id;
+
+  final String name; // Plan name
+  final String exercises; // Store as a comma-separated string
+  final String duration; // Duration of the workout plan
+
+  WorkoutPlan({
+    this.id,
+    required this.name,
+    required this.exercises,
+    required this.duration,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'exercises': exercises,
+      'duration': duration,
+    };
+  }
+
+  factory WorkoutPlan.fromMap(Map<String, dynamic> map) {
+    return WorkoutPlan(
+      id: map['id'],
+      name: map['name'],
+      exercises: map['exercises'],
+      duration: map['duration'],
     );
   }
 }

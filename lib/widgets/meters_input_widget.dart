@@ -17,7 +17,8 @@ class _MetersInputWidgetState extends State<MetersInputWidget> {
   Widget build(BuildContext context) {
     return TextField(
       controller: _controller,
-      keyboardType: TextInputType.number,  // Restricting to numeric input
+      keyboardType: TextInputType.number,
+      // Restricting to numeric input
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly, // Allow only digits
       ],

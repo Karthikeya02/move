@@ -74,11 +74,12 @@ class _$AppDatabase extends AppDatabase {
 
   WorkoutDao? _workoutDaoInstance;
 
-  Future<sqflite.Database> open(
-    String path,
-    List<Migration> migrations, [
-    Callback? callback,
-  ]) async {
+  WorkoutPlanDao? _workoutPlanDaoInstance;
+
+  Future<sqflite.Database> open(String path,
+      List<Migration> migrations, [
+        Callback? callback,
+      ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
       version: 1,
       onConfigure: (database) async {
@@ -97,6 +98,8 @@ class _$AppDatabase extends AppDatabase {
       onCreate: (database, version) async {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Workout` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `exercises` TEXT NOT NULL)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `workout_plans` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `exercises` TEXT NOT NULL, `duration` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -108,22 +111,28 @@ class _$AppDatabase extends AppDatabase {
   WorkoutDao get workoutDao {
     return _workoutDaoInstance ??= _$WorkoutDao(database, changeListener);
   }
+
+  @override
+  WorkoutPlanDao get workoutPlanDao {
+    return _workoutPlanDaoInstance ??=
+        _$WorkoutPlanDao(database, changeListener);
+  }
 }
 
 class _$WorkoutDao extends WorkoutDao {
-  _$WorkoutDao(
-    this.database,
-    this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
+  _$WorkoutDao(this.database,
+      this.changeListener,)
+      : _queryAdapter = QueryAdapter(database),
         _workoutInsertionAdapter = InsertionAdapter(
             database,
             'Workout',
-            (Workout item) => <String, Object?>{
-                  'id': item.id,
-                  'name': item.name,
-                  'date': item.date,
-                  'exercises': item.exercises
-                });
+                (Workout item) =>
+            <String, Object?>{
+              'id': item.id,
+              'name': item.name,
+              'date': item.date,
+              'exercises': item.exercises
+            });
 
   final sqflite.DatabaseExecutor database;
 
@@ -135,16 +144,69 @@ class _$WorkoutDao extends WorkoutDao {
 
   @override
   Future<List<Workout>> getAllWorkouts() async {
-    return _queryAdapter.queryList('SELECT * FROM Workout ORDER BY date DESC',
-        mapper: (Map<String, Object?> row) => Workout(
-            id: row['id'] as int?,
-            name: row['name'] as String,
-            date: row['date'] as String,
-            exercises: row['exercises'] as String));
+    return _queryAdapter.queryList('SELECT * FROM Workout',
+        mapper: (Map<String, Object?> row) =>
+            Workout(
+                id: row['id'] as int?,
+                name: row['name'] as String,
+                date: row['date'] as String,
+                exercises: row['exercises'] as String));
+  }
+
+  @override
+  Future<void> deleteWorkout(int id) async {
+    await _queryAdapter
+        .queryNoReturn('DELETE FROM Workout WHERE id = ?1', arguments: [id]);
   }
 
   @override
   Future<void> insertWorkout(Workout workout) async {
     await _workoutInsertionAdapter.insert(workout, OnConflictStrategy.abort);
+  }
+}
+
+class _$WorkoutPlanDao extends WorkoutPlanDao {
+  _$WorkoutPlanDao(this.database,
+      this.changeListener,)
+      : _queryAdapter = QueryAdapter(database),
+        _workoutPlanInsertionAdapter = InsertionAdapter(
+            database,
+            'workout_plans',
+                (WorkoutPlan item) =>
+            <String, Object?>{
+              'id': item.id,
+              'name': item.name,
+              'exercises': item.exercises,
+              'duration': item.duration
+            });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<WorkoutPlan> _workoutPlanInsertionAdapter;
+
+  @override
+  Future<List<WorkoutPlan>> getAllWorkoutPlans() async {
+    return _queryAdapter.queryList('SELECT * FROM workout_plans',
+        mapper: (Map<String, Object?> row) =>
+            WorkoutPlan(
+                id: row['id'] as int?,
+                name: row['name'] as String,
+                exercises: row['exercises'] as String,
+                duration: row['duration'] as String));
+  }
+
+  @override
+  Future<void> deleteWorkoutPlan(int id) async {
+    await _queryAdapter.queryNoReturn('DELETE FROM workout_plans WHERE id = ?1',
+        arguments: [id]);
+  }
+
+  @override
+  Future<void> insertWorkoutPlan(WorkoutPlan plan) async {
+    await _workoutPlanInsertionAdapter.insert(plan, OnConflictStrategy.abort);
   }
 }

@@ -73,7 +73,7 @@ class _NumericInputWidgetState extends State<NumericInputWidget> {
               borderRadius: BorderRadius.circular(30),
               child: CircleAvatar(
                 radius: 15,
-                backgroundColor: Colors.lightBlueAccent ,
+                backgroundColor: Colors.lightBlueAccent,
                 child: Icon(
                   Icons.remove,
                   color: Colors.white,
@@ -103,11 +103,13 @@ class _NumericInputWidgetState extends State<NumericInputWidget> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.lightBlueAccent, width: 2),
+                    borderSide:
+                    BorderSide(color: Colors.lightBlueAccent, width: 2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.lightBlueAccent.shade200, width: 2),
+                    borderSide: BorderSide(
+                        color: Colors.lightBlueAccent.shade200, width: 2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   contentPadding: EdgeInsets.symmetric(vertical: 15),

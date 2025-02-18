@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as htmlParser;
+import 'dart:convert';
 import '../models/workout_model.dart';
 import '../database/database.dart';
 
@@ -12,18 +12,12 @@ class DownloadWorkoutPage extends StatefulWidget {
 
 class _DownloadWorkoutPageState extends State<DownloadWorkoutPage> {
   final TextEditingController _urlController = TextEditingController();
-  Workout? _workoutPlan;
-  String? _errorMessage;
   List<String> _jsonLinks = [];
+  Workout? _selectedWorkout;
 
   Future<void> _fetchContent() async {
     final url = _urlController.text.trim();
-    if (url.isEmpty) {
-      setState(() {
-        _errorMessage = "Please enter a valid URL.";
-      });
-      return;
-    }
+    if (url.isEmpty) return;
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -31,46 +25,38 @@ class _DownloadWorkoutPageState extends State<DownloadWorkoutPage> {
         final contentType = response.headers['content-type'] ?? "";
 
         if (contentType.contains("application/json")) {
-          // Direct JSON response
+          // If URL directly points to a JSON file, parse it immediately
           _parseWorkoutJson(response.body);
         } else if (contentType.contains("text/html")) {
-          // HTML response, extract JSON links
+          // If it's an HTML page, extract JSON links
           _extractJsonLinks(response.body, url);
         } else {
-          setState(() {
-            _errorMessage = "Unsupported content type: $contentType";
-          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Unsupported content type: $contentType")),
+          );
         }
       } else {
-        setState(() {
-          _errorMessage = "Failed to fetch content. Please check the URL.";
-        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text("Failed to fetch content. Please check the URL.")),
+        );
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = "Error fetching content: $e";
-      });
+      print("Error fetching content: $e");
     }
   }
 
   void _parseWorkoutJson(String jsonStr) {
     try {
       final data = json.decode(jsonStr);
-      if (data != null && data.containsKey('name') && data.containsKey('exercises')) {
-        setState(() {
-          _workoutPlan = Workout.fromJson(data);
-          _errorMessage = null;
-        });
-      } else {
-        setState(() {
-          _errorMessage = "Invalid workout plan data.";
-          _workoutPlan = null;
-        });
-      }
-    } catch (e) {
       setState(() {
-        _errorMessage = "Invalid JSON format.";
+        _selectedWorkout = Workout.fromJson(data);
+        _jsonLinks.clear(); // Clear any previous JSON links
       });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Invalid JSON format.")),
+      );
     }
   }
 
@@ -83,74 +69,56 @@ class _DownloadWorkoutPageState extends State<DownloadWorkoutPage> {
       for (var link in links) {
         final href = link.attributes['href'];
         if (href != null && href.endsWith('.json')) {
-          // Convert relative URLs to absolute
-          final absoluteUrl = Uri.parse(baseUrl).resolve(href).toString();
-          jsonUrls.add(absoluteUrl);
+          jsonUrls.add(Uri.parse(baseUrl).resolve(href).toString());
         }
       }
 
       setState(() {
-        if (jsonUrls.isEmpty) {
-          _errorMessage = "No JSON links found on the page.";
-          _jsonLinks = [];
-        } else {
-          _jsonLinks = jsonUrls;
-          _errorMessage = null;
-        }
+        _jsonLinks = jsonUrls;
       });
+
+      if (jsonUrls.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("No JSON links found on the page.")),
+        );
+      }
     } catch (e) {
-      setState(() {
-        _errorMessage = "Error parsing HTML: $e";
-      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error parsing HTML: $e")),
+      );
     }
   }
 
-  Future<void> _fetchSelectedWorkout(String jsonUrl) async {
+  Future<void> _fetchWorkout(String jsonUrl) async {
     try {
       final response = await http.get(Uri.parse(jsonUrl));
       if (response.statusCode == 200) {
         _parseWorkoutJson(response.body);
       } else {
-        setState(() {
-          _errorMessage = "Failed to fetch selected workout plan.";
-        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to fetch workout data.")),
+        );
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = "Error fetching workout plan: $e";
-      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error fetching workout: $e")),
+      );
     }
   }
 
   void _saveWorkout() async {
-    if (_workoutPlan == null) return;
+    if (_selectedWorkout == null) return;
 
     final database = await getDatabase();
-    final workoutDao = database.workoutDao;
-
-
-    List<dynamic> decodedExercises = jsonDecode(_workoutPlan!.exercises);
-    String exercisesJson = jsonEncode(decodedExercises.map((e) => Exercise.fromJson(e).toJson()).toList());
-
-
-    Workout workout = Workout(
-      name: _workoutPlan!.name,
-      date: _workoutPlan!.date,
-      exercises: exercisesJson,
-    );
-
-    await workoutDao.insertWorkout(workout);
+    await database.workoutDao.insertWorkout(_selectedWorkout!);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Workout plan saved to database!")),
+      SnackBar(content: Text("Workout saved!")),
     );
-  }
 
-
-  void _discardWorkout() {
-    setState(() {
-      _workoutPlan = null;
-    });
+    // Redirect to selection page with workout details
+    Navigator.pushReplacementNamed(
+        context, '/add_workout', arguments: _selectedWorkout);
   }
 
   @override
@@ -160,73 +128,52 @@ class _DownloadWorkoutPageState extends State<DownloadWorkoutPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               controller: _urlController,
               decoration: InputDecoration(
-                labelText: "Workout Plan URL",
+                labelText: "Enter URL",
                 border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: _fetchContent,
-              child: Text("Download Plan"),
+              child: Text("Fetch Workout"),
             ),
-            if (_errorMessage != null) ...[
-              SizedBox(height: 10),
-              Text(_errorMessage!, style: TextStyle(color: Colors.red)),
-            ],
             if (_jsonLinks.isNotEmpty) ...[
               SizedBox(height: 20),
-              Text("Select a JSON Workout Plan:", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("Select a JSON Workout Plan:",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               Expanded(
                 child: ListView.builder(
                   itemCount: _jsonLinks.length,
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text(_jsonLinks[index]),
-                      trailing: ElevatedButton(
-                        onPressed: () => _fetchSelectedWorkout(_jsonLinks[index]),
-                        child: Text("Load"),
-                      ),
+                      onTap: () => _fetchWorkout(_jsonLinks[index]),
                     );
                   },
                 ),
               ),
             ],
-            if (_workoutPlan != null) ...[
-              SizedBox(height: 20),
-              Text("Workout Date: ${_workoutPlan!.date}",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            if (_selectedWorkout != null) ...[
               Expanded(
-                child: _workoutPlan != null && _workoutPlan!.exercises.isNotEmpty
-                    ? ListView.builder(
-                  itemCount: _workoutPlan!.getExerciseList().length,
+                child: ListView.builder(
+                  itemCount: _selectedWorkout!.getExerciseList().length,
                   itemBuilder: (context, index) {
-                    final exercise = _workoutPlan!.getExerciseList()[index];
+                    final exercise = _selectedWorkout!.getExerciseList()[index];
                     return ListTile(
                       title: Text(exercise.name),
-                      subtitle: Text("Target: ${exercise.target} ${exercise.unit}"),
+                      subtitle: Text(
+                          "Target: ${exercise.target} ${exercise.unit}"),
                     );
                   },
-                )
-                    : Center(child: Text("No exercises found in the workout plan.")),
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: _saveWorkout,
-                    child: Text("Save Plan"),
-                  ),
-                  ElevatedButton(
-                    onPressed: _discardWorkout,
-                    child: Text("Discard"),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  ),
-                ],
+              ElevatedButton(
+                onPressed: _saveWorkout,
+                child: Text("Save Workout"),
               ),
             ],
           ],

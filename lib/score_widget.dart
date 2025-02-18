@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../main.dart';
 
+import '../main.dart';
 
 class ScoreWidget extends StatelessWidget {
   @override
@@ -30,20 +30,16 @@ class ScoreWidget extends StatelessWidget {
       );
     }
 
-
     DateTime sevenDaysAgo = DateTime.now().subtract(Duration(days: 7));
     DateTime today = DateTime.now();
-
 
     int totalExercisesLast7Days = 0,
         exercisesMeetingTargetLast7Days = 0,
         totalExercisesToday = 0,
         exercisesMeetingTargetToday = 0;
 
-
     for (var workout in workouts) {
       DateTime workoutDate = DateTime.parse(workout.date);
-
 
       if (workoutDate.isAfter(sevenDaysAgo)) {
         for (var exercise in workout.getExerciseList()) {
@@ -51,7 +47,8 @@ class ScoreWidget extends StatelessWidget {
 
           totalExercisesLast7Days++;
 
-          if (exercise.target >= target) {  // Compare target instead of output
+          if (exercise.target >= target) {
+            // Compare target instead of output
             exercisesMeetingTargetLast7Days++;
           }
 
@@ -69,28 +66,29 @@ class ScoreWidget extends StatelessWidget {
     double performanceScore = 0;
     double todayPerformanceScore = 0;
 
-
     if (totalExercisesLast7Days > 0) {
-
       if (exercisesMeetingTargetLast7Days > 0) {
-        performanceScore = exercisesMeetingTargetLast7Days / totalExercisesLast7Days;
+        performanceScore =
+            exercisesMeetingTargetLast7Days / totalExercisesLast7Days;
       } else {
         performanceScore = 0; // If no exercises met the target, set to 0
       }
     }
 
-
     if (totalExercisesToday > 0) {
       if (exercisesMeetingTargetToday > 0) {
-        todayPerformanceScore = exercisesMeetingTargetToday / totalExercisesToday;
+        todayPerformanceScore =
+            exercisesMeetingTargetToday / totalExercisesToday;
       } else {
         todayPerformanceScore = 0;
       }
     }
 
-    String displayPerformanceScore = performanceScore == 0 ? '0' : performanceScore.toStringAsFixed(2);
-    String displayTodayPerformanceScore = todayPerformanceScore == 0 ? '0' : todayPerformanceScore.toStringAsFixed(2);
-
+    String displayPerformanceScore =
+        performanceScore == 0 ? '0' : performanceScore.toStringAsFixed(2);
+    String displayTodayPerformanceScore = todayPerformanceScore == 0
+        ? '0'
+        : todayPerformanceScore.toStringAsFixed(2);
 
     return Card(
       elevation: 5,
@@ -110,7 +108,6 @@ class ScoreWidget extends StatelessWidget {
       ),
     );
   }
-
 
   bool isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
@@ -134,8 +131,7 @@ int getTargetForExercise(String exerciseName, String exerciseType) {
   } else if (exerciseType == 'Meters') {
     if (exerciseName == 'Surfing') {
       return 60;
-    }
-    else if (exerciseName == 'Running') {
+    } else if (exerciseName == 'Running') {
       return 120;
     } else if (exerciseName == 'Cycling') {
       return 250;

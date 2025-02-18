@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
 import 'package:move/main.dart'; // Assuming this is the entry point
 import 'package:move/models/workout_model.dart';
 import 'package:move/widgets/meters_input_widget.dart';
 import 'package:move/widgets/numeric_widget.dart';
 import 'package:move/widgets/seconds_input_widget.dart';
 import 'package:move/workout_details/workout_recording_page.dart'; // Assuming the page is here
+import 'package:provider/provider.dart';
 
 void main() {
   group('WorkoutRecordingPage Tests', () {
-    testWidgets('Shows input fields for each exercise in the workout plan', (WidgetTester tester) async {
+    testWidgets('Shows input fields for each exercise in the workout plan',
+        (WidgetTester tester) async {
       // Set up mock workout data with exercises
       final mockWorkoutProvider = WorkoutProvider();
       final now = DateTime.now();
@@ -24,9 +25,7 @@ void main() {
           ExerciseResult('Swimming', 'Meters', 1),
           ExerciseResult('Squats', 'Reps', 1),
         ],
-        exercises: [
-
-        ],
+        exercises: [],
       ));
 
       // Render the page with the mock provider
@@ -35,7 +34,8 @@ void main() {
           home: ChangeNotifierProvider<WorkoutProvider>.value(
             value: mockWorkoutProvider,
             child: Scaffold(
-              body: WorkoutRecordingPage(),  // The page containing the input fields for exercises
+              body:
+                  WorkoutRecordingPage(), // The page containing the input fields for exercises
             ),
           ),
         ),

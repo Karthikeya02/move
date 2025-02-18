@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:move/score_widget.dart';
 import '../models/workout_model.dart';
+import '../score_widget.dart';
 
-class WorkoutDetails extends StatelessWidget {
+class WorkoutDetailsPage extends StatelessWidget {
   final Workout workout;
 
-  // Constructor to receive the workout from the previous page
-  WorkoutDetails(this.workout);
+  WorkoutDetailsPage({required this.workout});
 
   @override
   Widget build(BuildContext context) {
-    List<Exercise> exercises = workout.getExerciseList(); // Decode exercises from JSON
+    List<Exercise> exercises = workout.getExerciseList();
+
+    int totalExercises = exercises.length;
+    int completedExercises =
+        exercises
+            .where((exercise) => exercise.actual >= exercise.target)
+            .length;
+    int incompleteExercises = totalExercises - completedExercises;
 
     return Scaffold(
       appBar: AppBar(
@@ -18,7 +24,25 @@ class WorkoutDetails extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // ListView.builder to display the exercises
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Text(
+                  "Total Workouts: $totalExercises",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "Completed: $completedExercises",
+                  style: TextStyle(fontSize: 16, color: Colors.green),
+                ),
+                Text(
+                  "Incomplete: $incompleteExercises",
+                  style: TextStyle(fontSize: 16, color: Colors.red),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: exercises.length,
@@ -26,16 +50,21 @@ class WorkoutDetails extends StatelessWidget {
                 final exercise = exercises[index];
                 return ListTile(
                   title: Text(exercise.name),
-                  subtitle: Text('Target: ${exercise.target} ${exercise.unit}'),
+                  subtitle: Text(
+                      'Target: ${exercise.target} ${exercise
+                          .unit}, Completed: ${exercise.actual} ${exercise
+                          .unit}'),
+                  trailing: exercise.actual >= exercise.target
+                      ? Icon(Icons.check_circle, color: Colors.green)
+                      : Icon(Icons.cancel, color: Colors.red),
                 );
               },
             ),
           ),
-          // Button to show the performance score in a modal
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-              onPressed: () => _showScore(context), // Show bottom sheet when pressed
+              onPressed: () => _showScore(context),
               child: Text('View Score'),
             ),
           ),
@@ -50,10 +79,11 @@ class WorkoutDetails extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.all(10),
-        child: ScoreWidget(),
-      ),
+      builder: (context) =>
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: ScoreWidget(),
+          ),
     );
   }
 }

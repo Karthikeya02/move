@@ -28,7 +28,8 @@ class _SecondsInputWidgetState extends State<SecondsInputWidget> {
           value: _currentValue.toDouble(),
           min: widget.minSeconds.toDouble(),
           max: widget.maxSeconds.toDouble(),
-          divisions: (widget.maxSeconds - widget.minSeconds) ~/ 5, // Adjust granularity. Can be adjusted to 1 if needed. Kept 5 for simplicity
+          divisions: (widget.maxSeconds - widget.minSeconds) ~/ 5,
+          // Adjust granularity. Can be adjusted to 1 if needed. Kept 5 for simplicity
           label: '$_currentValue sec',
           activeColor: Colors.orange,
           inactiveColor: Colors.orange.shade200,
@@ -39,7 +40,8 @@ class _SecondsInputWidgetState extends State<SecondsInputWidget> {
             widget.onInputChanged(_currentValue);
           },
         ),
-        Text('$_currentValue sec', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        Text('$_currentValue sec',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
       ],
     );
   }

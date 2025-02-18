@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:move/workout_details/add_workout_page.dart';
+import 'package:move/workout_details/download_workout_page.dart';
+import 'package:move/workout_details/workout_recording_page.dart';
 import 'package:provider/provider.dart';
+
 import 'models/workout_model.dart'; // Import workout model
 import 'workout_details/workout_history_page.dart'; // Import the workout history page
-import 'workout_details/download_workout_page.dart'; // Import the Download Workout Page
 
 void main() => runApp(MyApp());
 
@@ -27,16 +30,21 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        initialRoute: '/',  // Define initial route
+        initialRoute: '/',
+        // Define initial route
         routes: {
           '/': (context) => WorkoutHistoryPage(),
+          '/add_workout': (context) => AddWorkoutPage(),
           '/download_workout': (context) => DownloadWorkoutPage(),
+          '/workout_history': (context) => WorkoutHistoryPage(),
+          '/workout_recording': (context) => WorkoutRecordingPage(),
+
+
         },
       ),
     );
   }
 }
-
 
 class WorkoutProvider with ChangeNotifier {
   final List<Workout> _workouts = [];

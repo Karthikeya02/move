@@ -208,7 +208,7 @@ class _DownloadWorkoutPageState extends State<DownloadWorkoutPage> {
                     final exercise = _workoutPlan!.getExerciseList()[index];
                     return ListTile(
                       title: Text(exercise.name),
-                      subtitle: Text("Target: \${exercise.target} \${exercise.unit}"),
+                      subtitle: Text("Target: ${exercise.target} ${exercise.unit}"),
                     );
                   },
                 )

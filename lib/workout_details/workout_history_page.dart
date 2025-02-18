@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import '../database/database.dart';
 import '../models/workout_model.dart';
+import 'package:intl/intl.dart';
+
 
 class WorkoutHistoryPage extends StatefulWidget {
   @override
@@ -73,7 +75,7 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
                   margin: EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
                     title: Text(workout.name, style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text("Date: ${workout.date}"),
+                    subtitle: Text("Date: ${DateFormat('dd MMM yyyy, hh:mma').format(DateTime.parse(workout.date).toLocal())}"),
                     onTap: () {
                       _showWorkoutDetails(workout);
                     },

@@ -9,7 +9,6 @@ import '../widgets/numeric_widget.dart';
 import 'dart:core';
 import 'dart:convert';
 
-
 class WorkoutRecordingPage extends StatefulWidget {
   const WorkoutRecordingPage({super.key});
 
@@ -19,25 +18,25 @@ class WorkoutRecordingPage extends StatefulWidget {
 
 class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
   final List<Exercise> exercises = [
-    Exercise(name: 'Push-ups', target: 0, unit: 'Reps', type: 'Reps'),
-    Exercise(name: 'Squats', target: 0, unit: 'Reps', type: 'Reps'),
-    Exercise(name: 'Plank', target: 0, unit: 'Seconds', type: 'Seconds'),
-    Exercise(name: 'Running', target: 0, unit: 'Meters', type: 'Meters'),
-    Exercise(name: 'Cycling', target: 0, unit: 'Meters', type: 'Meters'),
-    Exercise(name: 'Swimming', target: 0, unit: 'Meters', type: 'Meters'),
-    Exercise(name: 'Surfing', target: 0, unit: 'Meters', type: 'Meters'),
+    Exercise(name: 'Push-ups', target: 20, actual: 0, unit: 'Reps', type: 'Reps'),
+    Exercise(name: 'Squats', target: 30, actual: 0, unit: 'Reps', type: 'Reps'),
+    Exercise(name: 'Plank', target: 60, actual: 0, unit: 'Seconds', type: 'Seconds'),
+    Exercise(name: 'Running', target: 1000, actual: 0, unit: 'Meters', type: 'Meters'),
+    Exercise(name: 'Cycling', target: 5000, actual: 0, unit: 'Meters', type: 'Meters'),
+    Exercise(name: 'Swimming', target: 500, actual: 0, unit: 'Meters', type: 'Meters'),
+    Exercise(name: 'Surfing', target: 200, actual: 0, unit: 'Meters', type: 'Meters'),
   ];
 
-
-  final Map<int, int> exerciseOutputs = {}; // Stores user inputs
+  final Map<int, int> actualOutputs = {}; // Stores actual user inputs
 
   /// **Saves the recorded workout and updates the global state**
   void _saveWorkout() {
     final recordedExercises = exercises.map((exercise) {
-      final achievedOutput = exerciseOutputs[exercises.indexOf(exercise)] ?? 0;
+      final actualValue = actualOutputs[exercises.indexOf(exercise)] ?? 0;
       return Exercise(
         name: exercise.name,
-        target: achievedOutput, // Use achievedOutput instead of exerciseResults
+        target: exercise.target, // Keep original target
+        actual: actualValue, // Store the actual user input
         unit: exercise.unit,
         type: exercise.type,
       );
@@ -48,8 +47,6 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
       date: DateTime.now().toIso8601String(),
       exercises: jsonEncode(recordedExercises.map((e) => e.toJson()).toList()), // Store as JSON string
     );
-
-
 
     // Save workout to state
     Provider.of<WorkoutProvider>(context, listen: false).addWorkout(workout);
@@ -62,12 +59,12 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
   void _showScore(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
       builder: (context) => Padding(
-        padding: EdgeInsets.all(10),
-        child: ScoreWidget(),
+        padding: const EdgeInsets.all(10),
+        child: ScoreWidget(), // Removed 'const' because ScoreWidget might have non-constant values
       ),
     );
   }
@@ -86,7 +83,15 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(exercise.name, style: const TextStyle(fontSize: 18)),
+                Text(
+                  exercise.name,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  "Target: ${exercise.target} ${exercise.unit}",
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
                 _buildInputWidget(index, exercise.type),
               ],
             ),
@@ -98,11 +103,11 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
         children: [
           FloatingActionButton.extended(
             onPressed: () => _showScore(context),
-            icon: Icon(Icons.bar_chart),
-            label: Text("View Score"),
+            icon: const Icon(Icons.bar_chart),
+            label: const Text("View Score"),
             backgroundColor: Colors.blueAccent,
           ),
-          SizedBox(height: 10), // Spacing between buttons
+          const SizedBox(height: 10), // Spacing between buttons
           FloatingActionButton(
             onPressed: _saveWorkout,
             child: const Icon(Icons.save),
@@ -116,18 +121,17 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
   Widget _buildInputWidget(int index, String type) {
     if (type == 'Meters') {
       return MetersInputWidget(
-        onInputChanged: (value) => setState(() => exerciseOutputs[index] = value),
+        onInputChanged: (value) => setState(() => actualOutputs[index] = value),
       );
-    }
-    else if (type == 'Seconds'){
+    } else if (type == 'Seconds') {
       return SecondsInputWidget(
-        onInputChanged: (value) => setState(() => exerciseOutputs[index] = value),
+        onInputChanged: (value) => setState(() => actualOutputs[index] = value),
       );
     }
     return NumericInputWidget(
       label: type,
       initialValue: 0,
-      onInputChanged: (value) => setState(() => exerciseOutputs[index] = value),
+      onInputChanged: (value) => setState(() => actualOutputs[index] = value),
     );
   }
 }

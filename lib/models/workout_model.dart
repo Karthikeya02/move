@@ -9,7 +9,12 @@ class Workout {
   final String date;
   final String exercises; // Store exercises as JSON string
 
-  Workout({this.id, required this.name, required this.date, required this.exercises});
+  Workout({
+    this.id,
+    required this.name,
+    required this.date,
+    required this.exercises,
+  });
 
   // Convert Workout to JSON
   Map<String, dynamic> toJson() {
@@ -38,21 +43,34 @@ class Workout {
     List<dynamic> decodedList = jsonDecode(exercises);
     return decodedList.map((e) => Exercise.fromJson(e)).toList();
   }
+
+  // Encode List of Exercises into JSON string for storage
+  String encodeExerciseList(List<Exercise> exerciseList) {
+    return jsonEncode(exerciseList.map((e) => e.toJson()).toList());
+  }
 }
 
 class Exercise {
   final String name;
   final int target;
+  final int actual; // New field to store actual user performance
   final String unit;
   final String type;
 
-  Exercise({required this.name, required this.target, required this.unit, required this.type});
+  Exercise({
+    required this.name,
+    required this.target,
+    required this.actual, // User-entered data
+    required this.unit,
+    required this.type,
+  });
 
   // Convert Exercise to JSON
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       'target': target,
+      'actual': actual, // Include actual in JSON
       'unit': unit,
       'type': type,
     };
@@ -63,6 +81,7 @@ class Exercise {
     return Exercise(
       name: json['name'] ?? "Unknown",
       target: (json['target'] is int) ? json['target'] : int.tryParse(json['target'].toString()) ?? 0,
+      actual: (json['actual'] is int) ? json['actual'] : int.tryParse(json['actual'].toString()) ?? 0,
       unit: json['unit'] ?? "",
       type: json['type'] ?? "Unknown",
     );

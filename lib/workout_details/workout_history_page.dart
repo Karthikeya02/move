@@ -11,24 +11,24 @@ class WorkoutHistoryPage extends StatefulWidget {
 }
 
 class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
-  late Future<List<Workout>> _workouts;
+  Future<List<Workout>>? _workouts; // Nullable future
 
   @override
   void initState() {
     super.initState();
-    _loadWorkouts();
+    _loadWorkouts(); // Load workouts when app starts
   }
 
   Future<void> _loadWorkouts() async {
     final db = await getDatabase();
     final workouts = await db.workoutDao.getAllWorkouts();
     setState(() {
-      _workouts = Future.value(workouts);
+      _workouts = Future.value(workouts); // Update UI with latest data
     });
   }
 
   Future<void> _refreshWorkouts() async {
-    await _loadWorkouts(); // Refresh workouts from DB
+    await _loadWorkouts(); // Reload workouts when user refreshes
   }
 
   @override
@@ -46,8 +46,21 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
               child: FutureBuilder<List<Workout>>(
                 future: _workouts,
                 builder: (context, snapshot) {
+                  if (_workouts == null) {
+                    return Center(child: CircularProgressIndicator()); // Initial load
+                  }
+
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        "Error loading workouts",
+                        style: TextStyle(fontSize: 16, color: Colors.red),
+                      ),
+                    );
                   }
 
                   final workouts = snapshot.data ?? [];
@@ -62,7 +75,7 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
 
                   return ListView.builder(
                     itemCount: workouts.length,
-                    padding: EdgeInsets.only(bottom: 80), // Prevent FAB overlap
+                    padding: EdgeInsets.only(bottom: 100), // Prevent overlap with FAB
                     itemBuilder: (context, index) {
                       final workout = workouts[index];
 
@@ -110,10 +123,11 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
           ),
           SizedBox(height: 10), // Space between list and button
           _buildGradientButton(context), // View Score button
+          SizedBox(height: 20), // Extra spacing to prevent FAB overlap
         ],
       ),
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: 80), // Moves FAB higher
+        padding: EdgeInsets.only(bottom: 90), // Moves FAB higher to avoid overlap
         child: FloatingActionButton(
           backgroundColor: Colors.pinkAccent,
           onPressed: () {
@@ -129,13 +143,13 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
 
   /// Creates a Gradient Button for "View Score"
   Widget _buildGradientButton(BuildContext context) {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      width: double.infinity,
       child: InkWell(
         onTap: () => _showScore(context),
         borderRadius: BorderRadius.circular(30),
         child: Container(
-          width: double.infinity,
           padding: EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             gradient: LinearGradient(

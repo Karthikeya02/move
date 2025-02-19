@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/workout_model.dart';
 import '../score_widget.dart';
 
@@ -12,10 +13,9 @@ class WorkoutDetailsPage extends StatelessWidget {
     List<Exercise> exercises = workout.getExerciseList();
 
     int totalExercises = exercises.length;
-    int completedExercises =
-        exercises
-            .where((exercise) => exercise.actual >= exercise.target)
-            .length;
+    int completedExercises = exercises
+        .where((exercise) => exercise.actual >= exercise.target)
+        .length;
     int incompleteExercises = totalExercises - completedExercises;
 
     return Scaffold(
@@ -51,9 +51,7 @@ class WorkoutDetailsPage extends StatelessWidget {
                 return ListTile(
                   title: Text(exercise.name),
                   subtitle: Text(
-                      'Target: ${exercise.target} ${exercise
-                          .unit}, Completed: ${exercise.actual} ${exercise
-                          .unit}'),
+                      'Target: ${exercise.target} ${exercise.unit}, Completed: ${exercise.actual} ${exercise.unit}'),
                   trailing: exercise.actual >= exercise.target
                       ? Icon(Icons.check_circle, color: Colors.green)
                       : Icon(Icons.cancel, color: Colors.red),
@@ -79,11 +77,10 @@ class WorkoutDetailsPage extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
-      builder: (context) =>
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: ScoreWidget(),
-          ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.all(10),
+        child: ScoreWidget(),
+      ),
     );
   }
 }

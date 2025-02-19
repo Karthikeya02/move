@@ -21,7 +21,7 @@ class _CustomizeWorkoutPageState extends State<CustomizeWorkoutPage> {
   void initState() {
     super.initState();
     final List<Map<String, dynamic>> exercisesList =
-    List<Map<String, dynamic>>.from(jsonDecode(widget.plan.exercises));
+        List<Map<String, dynamic>>.from(jsonDecode(widget.plan.exercises));
 
     for (var exercise in exercisesList) {
       controllers[exercise['name']] = TextEditingController();
@@ -32,7 +32,7 @@ class _CustomizeWorkoutPageState extends State<CustomizeWorkoutPage> {
     final database = await getDatabase();
 
     final List<Map<String, dynamic>> exercisesList =
-    List<Map<String, dynamic>>.from(jsonDecode(widget.plan.exercises));
+        List<Map<String, dynamic>>.from(jsonDecode(widget.plan.exercises));
 
     final List<Exercise> customizedExercises = exercisesList.map((exercise) {
       return Exercise(
@@ -48,7 +48,7 @@ class _CustomizeWorkoutPageState extends State<CustomizeWorkoutPage> {
       name: widget.plan.name,
       date: DateTime.now().toIso8601String(),
       exercises:
-      jsonEncode(customizedExercises.map((e) => e.toJson()).toList()),
+          jsonEncode(customizedExercises.map((e) => e.toJson()).toList()),
     );
 
     await database.workoutDao.insertWorkout(workout);
@@ -63,7 +63,7 @@ class _CustomizeWorkoutPageState extends State<CustomizeWorkoutPage> {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> exercisesList =
-    List<Map<String, dynamic>>.from(jsonDecode(widget.plan.exercises));
+        List<Map<String, dynamic>>.from(jsonDecode(widget.plan.exercises));
 
     return Scaffold(
       appBar: AppBar(title: Text("Customize ${widget.plan.name}")),

@@ -8,6 +8,7 @@ import '../widgets/seconds_input_widget.dart';
 
 class WorkoutRecordingPage extends StatefulWidget {
   final WorkoutPlan workoutPlan;
+
   const WorkoutRecordingPage({required this.workoutPlan, super.key});
 
   @override
@@ -48,12 +49,13 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
 
     await database.workoutDao.insertWorkout(workout);
 
+    print("Workout saved: ${workout.toJson()}");  // ✅ Debug log
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Workout Saved!")),
     );
 
-    /// Use pushReplacementNamed instead of pushNamed
-    Navigator.pushReplacementNamed(context, '/workout_history');
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
 
@@ -73,7 +75,8 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
               children: [
                 Text(
                   exercise.name,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 5),
                 Text(
@@ -99,20 +102,22 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
     switch (type) {
       case 'meters':
         return MetersInputWidget(
-          onInputChanged: (value) => setState(() => actualOutputs[index] = value),
+          onInputChanged: (value) =>
+              setState(() => actualOutputs[index] = value),
         );
       case 'seconds':
         return SecondsInputWidget(
-          onInputChanged: (value) => setState(() => actualOutputs[index] = value),
+          onInputChanged: (value) =>
+              setState(() => actualOutputs[index] = value),
         );
       case 'reps':
       default:
         return NumericInputWidget(
           label: type,
           initialValue: 0,
-          onInputChanged: (value) => setState(() => actualOutputs[index] = value),
+          onInputChanged: (value) =>
+              setState(() => actualOutputs[index] = value),
         );
     }
   }
-
 }

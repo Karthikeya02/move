@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' as htmlParser;
 import 'dart:convert';
-import '../models/workout_model.dart';
+
+import 'package:flutter/material.dart';
+import 'package:html/parser.dart' as htmlParser;
+import 'package:http/http.dart' as http;
+
 import '../database/database.dart';
+import '../models/workout_model.dart';
 
 class DownloadWorkoutPage extends StatefulWidget {
   @override
@@ -113,7 +115,10 @@ class _DownloadWorkoutPageState extends State<DownloadWorkoutPage> {
     await database.workoutPlanDao.insertWorkoutPlan(
       WorkoutPlan(
         name: _selectedWorkout!.name,
-        exercises: jsonEncode(_selectedWorkout!.getExerciseList().map((e) => e.toJson()).toList()),
+        exercises: jsonEncode(_selectedWorkout!
+            .getExerciseList()
+            .map((e) => e.toJson())
+            .toList()),
         duration: "Custom Duration", // Placeholder
       ),
     );
@@ -125,7 +130,6 @@ class _DownloadWorkoutPageState extends State<DownloadWorkoutPage> {
     // Navigate to Add Workout Page
     Navigator.pushReplacementNamed(context, '/add_workout');
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -171,8 +175,8 @@ class _DownloadWorkoutPageState extends State<DownloadWorkoutPage> {
                     final exercise = _selectedWorkout!.getExerciseList()[index];
                     return ListTile(
                       title: Text(exercise.name),
-                      subtitle: Text(
-                          "Target: ${exercise.target} ${exercise.unit}"),
+                      subtitle:
+                          Text("Target: ${exercise.target} ${exercise.unit}"),
                     );
                   },
                 ),

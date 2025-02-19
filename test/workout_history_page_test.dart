@@ -23,7 +23,7 @@ void main() {
             value: mockWorkoutProvider,
             child: Scaffold(
               body:
-              WorkoutHistoryPage(), // Page that shows the list of workouts
+                  WorkoutHistoryPage(), // Page that shows the list of workouts
             ),
           ),
         ),

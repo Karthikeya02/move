@@ -104,7 +104,7 @@ class _NumericInputWidgetState extends State<NumericInputWidget> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                    BorderSide(color: Colors.lightBlueAccent, width: 2),
+                        BorderSide(color: Colors.lightBlueAccent, width: 2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   enabledBorder: OutlineInputBorder(

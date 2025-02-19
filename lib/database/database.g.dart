@@ -76,10 +76,11 @@ class _$AppDatabase extends AppDatabase {
 
   WorkoutPlanDao? _workoutPlanDaoInstance;
 
-  Future<sqflite.Database> open(String path,
-      List<Migration> migrations, [
-        Callback? callback,
-      ]) async {
+  Future<sqflite.Database> open(
+    String path,
+    List<Migration> migrations, [
+    Callback? callback,
+  ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
       version: 1,
       onConfigure: (database) async {
@@ -120,19 +121,19 @@ class _$AppDatabase extends AppDatabase {
 }
 
 class _$WorkoutDao extends WorkoutDao {
-  _$WorkoutDao(this.database,
-      this.changeListener,)
-      : _queryAdapter = QueryAdapter(database),
+  _$WorkoutDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
         _workoutInsertionAdapter = InsertionAdapter(
             database,
             'Workout',
-                (Workout item) =>
-            <String, Object?>{
-              'id': item.id,
-              'name': item.name,
-              'date': item.date,
-              'exercises': item.exercises
-            });
+            (Workout item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'date': item.date,
+                  'exercises': item.exercises
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -145,12 +146,11 @@ class _$WorkoutDao extends WorkoutDao {
   @override
   Future<List<Workout>> getAllWorkouts() async {
     return _queryAdapter.queryList('SELECT * FROM Workout',
-        mapper: (Map<String, Object?> row) =>
-            Workout(
-                id: row['id'] as int?,
-                name: row['name'] as String,
-                date: row['date'] as String,
-                exercises: row['exercises'] as String));
+        mapper: (Map<String, Object?> row) => Workout(
+            id: row['id'] as int?,
+            name: row['name'] as String,
+            date: row['date'] as String,
+            exercises: row['exercises'] as String));
   }
 
   @override
@@ -166,19 +166,19 @@ class _$WorkoutDao extends WorkoutDao {
 }
 
 class _$WorkoutPlanDao extends WorkoutPlanDao {
-  _$WorkoutPlanDao(this.database,
-      this.changeListener,)
-      : _queryAdapter = QueryAdapter(database),
+  _$WorkoutPlanDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
         _workoutPlanInsertionAdapter = InsertionAdapter(
             database,
             'workout_plans',
-                (WorkoutPlan item) =>
-            <String, Object?>{
-              'id': item.id,
-              'name': item.name,
-              'exercises': item.exercises,
-              'duration': item.duration
-            });
+            (WorkoutPlan item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'exercises': item.exercises,
+                  'duration': item.duration
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -191,12 +191,11 @@ class _$WorkoutPlanDao extends WorkoutPlanDao {
   @override
   Future<List<WorkoutPlan>> getAllWorkoutPlans() async {
     return _queryAdapter.queryList('SELECT * FROM workout_plans',
-        mapper: (Map<String, Object?> row) =>
-            WorkoutPlan(
-                id: row['id'] as int?,
-                name: row['name'] as String,
-                exercises: row['exercises'] as String,
-                duration: row['duration'] as String));
+        mapper: (Map<String, Object?> row) => WorkoutPlan(
+            id: row['id'] as int?,
+            name: row['name'] as String,
+            exercises: row['exercises'] as String,
+            duration: row['duration'] as String));
   }
 
   @override

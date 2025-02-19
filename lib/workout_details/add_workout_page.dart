@@ -36,7 +36,7 @@ class _AddWorkoutPageState extends State<AddWorkoutPage> {
       body: Column(
         children: [
           ListTile(
-            title: Text("Hardcoded Workout"),
+            title: Text("Manual Workout Plan"),
             subtitle: Text("Enter custom values for predefined exercises"),
             onTap: () {
               Navigator.push(

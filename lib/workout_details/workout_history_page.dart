@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../database/database.dart';
 import '../models/workout_model.dart';
 import '../workout_details/workout_details.dart';
@@ -17,15 +18,24 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
     _loadWorkouts();
   }
 
-  void _loadWorkouts() {
+  void _loadWorkouts() async {
+    final database = await getDatabase();
+    final fetchedWorkouts = await database.workoutDao.getAllWorkouts();
+
     setState(() {
-      _workouts = _fetchSavedWorkouts();
+      _workouts = Future.value(fetchedWorkouts);
     });
+
+    print("Loaded Workouts: ${fetchedWorkouts.length}");
   }
+
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _loadWorkouts(); // Reload workouts when returning to the history page
+    setState(() {
+      _loadWorkouts(); // Force refresh when coming back
+    });
   }
 
 
@@ -39,7 +49,6 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
 
     return workouts;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +64,8 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
           final workouts = snapshot.data ?? [];
           if (workouts.isEmpty) {
             return Center(
-              child: Text("No workouts recorded yet!", style: TextStyle(fontSize: 18)),
+              child: Text("No workouts recorded yet!",
+                  style: TextStyle(fontSize: 18)),
             );
           }
 
@@ -66,14 +76,17 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
               return Card(
                 margin: EdgeInsets.all(10),
                 child: ListTile(
-                  title: Text(workout.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  title: Text(workout.name,
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   subtitle: Text("Date: ${workout.date}"),
                   trailing: Icon(Icons.arrow_forward_ios),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => WorkoutDetailsPage(workout: workout),
+                        builder: (context) =>
+                            WorkoutDetailsPage(workout: workout),
                       ),
                     );
                   },

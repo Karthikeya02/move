@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../database/database.dart';
@@ -14,11 +13,27 @@ class HardcodedWorkoutPage extends StatefulWidget {
 
 class _HardcodedWorkoutPageState extends State<HardcodedWorkoutPage> {
   final List<Exercise> exercises = [
-    Exercise(name: 'Jumping Jacks', target: 50, actual: 0, unit: 'Reps', type: 'Reps'),
+    Exercise(
+        name: 'Jumping Jacks',
+        target: 50,
+        actual: 0,
+        unit: 'Reps',
+        type: 'Reps'),
     Exercise(name: 'Lunges', target: 30, actual: 0, unit: 'Reps', type: 'Reps'),
-    Exercise(name: 'Burpees', target: 20, actual: 0, unit: 'Reps', type: 'Reps'),
-    Exercise(name: 'Wall Sit', target: 45, actual: 0, unit: 'Seconds', type: 'Seconds'),
-    Exercise(name: 'Running', target: 800, actual: 0, unit: 'Meters', type: 'Meters'),
+    Exercise(
+        name: 'Burpees', target: 20, actual: 0, unit: 'Reps', type: 'Reps'),
+    Exercise(
+        name: 'Wall Sit',
+        target: 45,
+        actual: 0,
+        unit: 'Seconds',
+        type: 'Seconds'),
+    Exercise(
+        name: 'Running',
+        target: 800,
+        actual: 0,
+        unit: 'Meters',
+        type: 'Meters'),
   ];
 
   final Map<int, int> actualOutputs = {}; // Stores user inputs
@@ -50,9 +65,9 @@ class _HardcodedWorkoutPageState extends State<HardcodedWorkoutPage> {
     );
 
     /// Use pushReplacementNamed to avoid duplicate history pages
-    Navigator.pushReplacementNamed(context, '/workout_history');
-  }
+    Navigator.of(context).popUntil((route) => route.isFirst);
 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +85,8 @@ class _HardcodedWorkoutPageState extends State<HardcodedWorkoutPage> {
               children: [
                 Text(
                   exercise.name,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 5),
                 Text(

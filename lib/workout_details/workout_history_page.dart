@@ -18,15 +18,15 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
     _loadWorkouts();
   }
 
-  void _loadWorkouts() async {
-    final database = await getDatabase();
-    final fetchedWorkouts = await database.workoutDao.getAllWorkouts();
+  void _loadWorkouts() {
+    _workouts = getDatabase().then((db) => db.workoutDao.getAllWorkouts());
+    setState(() {}); // Ensure UI updates
+  }
 
-    setState(() {
-      _workouts = Future.value(fetchedWorkouts);
-    });
-
-    print("DEBUG: Loaded Workouts: ${fetchedWorkouts.length}");
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadWorkouts(); // Refresh workouts when dependencies change
   }
 
   @override

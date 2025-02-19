@@ -78,7 +78,7 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
                   "Target: ${exercise.target} ${exercise.unit}",
                   style: const TextStyle(fontSize: 16, color: Colors.grey),
                 ),
-                _buildInputWidget(index, exercise.type),
+                _buildInputWidget(index, exercise.unit),
               ],
             ),
           );
@@ -94,19 +94,23 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
   }
 
   Widget _buildInputWidget(int index, String type) {
-    if (type == 'Meters') {
-      return MetersInputWidget(
-        onInputChanged: (value) => setState(() => actualOutputs[index] = value),
-      );
-    } else if (type == 'Seconds') {
-      return SecondsInputWidget(
-        onInputChanged: (value) => setState(() => actualOutputs[index] = value),
-      );
+    switch (type) {
+      case 'meters':
+        return MetersInputWidget(
+          onInputChanged: (value) => setState(() => actualOutputs[index] = value),
+        );
+      case 'seconds':
+        return SecondsInputWidget(
+          onInputChanged: (value) => setState(() => actualOutputs[index] = value),
+        );
+      case 'reps':
+      default:
+        return NumericInputWidget(
+          label: type,
+          initialValue: 0,
+          onInputChanged: (value) => setState(() => actualOutputs[index] = value),
+        );
     }
-    return NumericInputWidget(
-      label: type,
-      initialValue: 0,
-      onInputChanged: (value) => setState(() => actualOutputs[index] = value),
-    );
   }
+
 }

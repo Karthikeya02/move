@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../models/workout_model.dart';
 import '../score_widget.dart';
 
@@ -21,56 +20,76 @@ class WorkoutDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Workout Details'),
+        backgroundColor: Colors.pinkAccent,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Text(
-                  "Total Workouts: $totalExercises",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text(
+                      "Total Exercises: $totalExercises",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      "Completed: $completedExercises",
+                      style: TextStyle(fontSize: 16, color: Colors.green),
+                    ),
+                    Text(
+                      "Incomplete: $incompleteExercises",
+                      style: TextStyle(fontSize: 16, color: Colors.red),
+                    ),
+                  ],
                 ),
-                Text(
-                  "Completed: $completedExercises",
-                  style: TextStyle(fontSize: 16, color: Colors.green),
-                ),
-                Text(
-                  "Incomplete: $incompleteExercises",
-                  style: TextStyle(fontSize: 16, color: Colors.red),
-                ),
-              ],
+              ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: exercises.length,
-              itemBuilder: (context, index) {
-                final exercise = exercises[index];
-                return ListTile(
-                  title: Text(exercise.name),
-                  subtitle: Text(
-                      'Target: ${exercise.target} ${exercise.unit}, Completed: ${exercise.actual} ${exercise.unit}'),
-                  trailing: exercise.actual >= exercise.target
-                      ? Icon(Icons.check_circle, color: Colors.green)
-                      : Icon(Icons.cancel, color: Colors.red),
-                );
-              },
+            SizedBox(height: 16),
+            Expanded(
+              child: ListView.builder(
+                itemCount: exercises.length,
+                itemBuilder: (context, index) {
+                  final exercise = exercises[index];
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    elevation: 3,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(12),
+                      title: Text(
+                        exercise.name,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        'Target: ${exercise.target} ${exercise.unit}, Completed: ${exercise.actual} ${exercise.unit}',
+                      ),
+                      trailing: exercise.actual >= exercise.target
+                          ? Icon(Icons.check_circle, color: Colors.green)
+                          : Icon(Icons.cancel, color: Colors.red),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: () => _showScore(context),
-              child: Text('View Score'),
-            ),
-          ),
-        ],
+            SizedBox(height: 16),
+            _buildGradientButton(context),
+          ],
+        ),
       ),
     );
   }
 
+  /// Shows the Score Modal
   void _showScore(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -80,6 +99,45 @@ class WorkoutDetailsPage extends StatelessWidget {
       builder: (context) => Padding(
         padding: EdgeInsets.all(10),
         child: ScoreWidget(),
+      ),
+    );
+  }
+
+  /// Creates a Gradient Button for "View Score"
+  Widget _buildGradientButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      child: InkWell(
+        onTap: () => _showScore(context),
+        borderRadius: BorderRadius.circular(30),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.pinkAccent, Colors.orangeAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 6,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            'View Score',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,141 +1,134 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
+import '../database/database.dart';
+import '../models/workout_model.dart';
 
-import '../main.dart';
+class ScoreWidget extends StatefulWidget {
+  @override
+  _ScoreWidgetState createState() => _ScoreWidgetState();
+}
 
-class ScoreWidget extends StatelessWidget {
+class _ScoreWidgetState extends State<ScoreWidget> {
+  List<Workout> _workouts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWorkoutsFromDB();
+  }
+
+  /// Fetch workouts from the database
+  Future<void> _loadWorkoutsFromDB() async {
+    final database = await getDatabase();
+    List<Workout> fetchedWorkouts = await database.workoutDao.getAllWorkouts();
+
+    setState(() {
+      _workouts = fetchedWorkouts;
+    });
+
+    print("DEBUG: Loaded ${_workouts.length} workouts from DB.");
+  }
+
   @override
   Widget build(BuildContext context) {
-    final workouts = Provider.of<WorkoutProvider>(context).workouts;
-
-    // If no workouts are available, display a default message
-    if (workouts.isEmpty) {
-      return Card(
-        elevation: 5,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'No workouts in the past 7 days.',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            ],
-          ),
+    if (_workouts.isEmpty) {
+      return Center(
+        child: Text(
+          "No workouts recorded yet.",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
         ),
       );
     }
 
-    DateTime sevenDaysAgo = DateTime.now().subtract(Duration(days: 7));
     DateTime today = DateTime.now();
+    DateTime sevenDaysAgo = today.subtract(Duration(days: 7));
 
-    int totalExercisesLast7Days = 0,
-        exercisesMeetingTargetLast7Days = 0,
-        totalExercisesToday = 0,
-        exercisesMeetingTargetToday = 0;
+    double overallScore = 0.0;
+    int totalExercisesOverall = 0;
 
-    for (var workout in workouts) {
+    double todayScore = 0.0;
+    int totalExercisesToday = 0;
+
+    for (var workout in _workouts) {
       DateTime workoutDate = DateTime.parse(workout.date);
+      List<Exercise> exercises = workout.getExerciseList();
 
-      if (workoutDate.isAfter(sevenDaysAgo)) {
-        for (var exercise in workout.getExerciseList()) {
-          int target = getTargetForExercise(exercise.name, exercise.type);
+      for (var exercise in exercises) {
+        double exerciseScore = _calculateExerciseScore(exercise);
 
-          totalExercisesLast7Days++;
+        // Include in overall score
+        overallScore += exerciseScore;
+        totalExercisesOverall++;
 
-          if (exercise.target >= target) {
-            // Compare target instead of output
-            exercisesMeetingTargetLast7Days++;
-          }
-
-          if (isSameDay(workoutDate, today)) {
-            totalExercisesToday++;
-
-            if (exercise.target >= target) {
-              exercisesMeetingTargetToday++;
-            }
-          }
+        // Check if the workout is from today
+        if (_isSameDay(workoutDate, today)) {
+          todayScore += exerciseScore;
+          totalExercisesToday++;
         }
       }
     }
 
-    double performanceScore = 0;
-    double todayPerformanceScore = 0;
+    // Compute averages
+    double finalOverallScore = totalExercisesOverall > 0 ? (overallScore / totalExercisesOverall) : 0.0;
+    double finalTodayScore = totalExercisesToday > 0 ? (todayScore / totalExercisesToday) : 0.0;
 
-    if (totalExercisesLast7Days > 0) {
-      if (exercisesMeetingTargetLast7Days > 0) {
-        performanceScore =
-            exercisesMeetingTargetLast7Days / totalExercisesLast7Days;
-      } else {
-        performanceScore = 0; // If no exercises met the target, set to 0
-      }
-    }
-
-    if (totalExercisesToday > 0) {
-      if (exercisesMeetingTargetToday > 0) {
-        todayPerformanceScore =
-            exercisesMeetingTargetToday / totalExercisesToday;
-      } else {
-        todayPerformanceScore = 0;
-      }
-    }
-
-    String displayPerformanceScore =
-        performanceScore == 0 ? '0' : performanceScore.toStringAsFixed(2);
-    String displayTodayPerformanceScore = todayPerformanceScore == 0
-        ? '0'
-        : todayPerformanceScore.toStringAsFixed(2);
-
-    return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Overall Score: $displayPerformanceScore'),
-            Divider(), // Add a divider to separate the two scores
-            Text('Today\'s Score: $displayTodayPerformanceScore'),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "Workout Performance",
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildCircularScoreCard("Overall Score", finalOverallScore),
+              _buildCircularScoreCard("Today's Score", finalTodayScore),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  bool isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
+  /// Computes the score for an exercise (1 if completed, else percentage of target)
+  double _calculateExerciseScore(Exercise exercise) {
+    if (exercise.actual >= exercise.target) {
+      return 1.0;
+    }
+    return exercise.actual / exercise.target;
   }
-}
 
-int getTargetForExercise(String exerciseName, String exerciseType) {
-  // Define target values based on exercise type or name
-  if (exerciseType == 'Reps') {
-    if (exerciseName == 'Push-ups') {
-      return 12;
-    } else if (exerciseName == 'Squats') {
-      return 12;
-    }
-  } else if (exerciseType == 'Seconds') {
-    if (exerciseName == 'Plank') {
-      return 12;
-    }
-  } else if (exerciseType == 'Meters') {
-    if (exerciseName == 'Surfing') {
-      return 60;
-    } else if (exerciseName == 'Running') {
-      return 120;
-    } else if (exerciseName == 'Cycling') {
-      return 250;
-    }
+  /// UI: Displays a Circular Score Indicator
+  Widget _buildCircularScoreCard(String title, double score) {
+    return Column(
+      children: [
+        CircularPercentIndicator(
+          radius: 65.0,
+          lineWidth: 10.0,
+          percent: score.clamp(0.0, 1.0), // Ensure within 0-100%
+          center: Text(
+            "${(score * 100).toStringAsFixed(1)}%",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          progressColor: score > 0.5 ? Colors.green : Colors.red,
+          backgroundColor: Colors.grey.shade300,
+          circularStrokeCap: CircularStrokeCap.round,
+        ),
+        SizedBox(height: 8),
+        Text(
+          title,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
   }
-  return 0;
+
+  /// Utility function to check if two dates are the same day
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+  }
 }

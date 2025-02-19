@@ -86,13 +86,18 @@ class _AddWorkoutPageState extends State<AddWorkoutPage> {
               },
             ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/download_workout');
-            },
-            child: Text("Download Workout Plan"),
-          ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.pushNamed(context, '/download_workout');
+        },
+        backgroundColor: Colors.green,
+        icon: Icon(Icons.download, color: Colors.white),
+        label: Text(
+          "Download Workout",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }

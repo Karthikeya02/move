@@ -32,10 +32,13 @@ class _ScoreWidgetState extends State<ScoreWidget> {
   @override
   Widget build(BuildContext context) {
     if (_workouts.isEmpty) {
-      return Center(
-        child: Text(
-          "No workouts recorded yet.",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
+      return Container(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Text(
+            "No workouts recorded yet.",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
+          ),
         ),
       );
     }
@@ -72,16 +75,20 @@ class _ScoreWidgetState extends State<ScoreWidget> {
     double finalOverallScore = totalExercisesOverall > 0 ? (overallScore / totalExercisesOverall) : 0.0;
     double finalTodayScore = totalExercisesToday > 0 ? (todayScore / totalExercisesToday) : 0.0;
 
-    return Padding(
+    return Container(
       padding: const EdgeInsets.all(16.0),
+      constraints: BoxConstraints(
+        maxHeight: 250, // Restrict the height of the modal
+      ),
       child: Column(
+        mainAxisSize: MainAxisSize.min, // Prevent extra space
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             "Workout Performance",
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 15),
+          SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -118,7 +125,7 @@ class _ScoreWidgetState extends State<ScoreWidget> {
           backgroundColor: Colors.grey.shade300,
           circularStrokeCap: CircularStrokeCap.round,
         ),
-        SizedBox(height: 8),
+        SizedBox(height: 6), // Slightly reduced spacing
         Text(
           title,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

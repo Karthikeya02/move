@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../database/database.dart';
@@ -6,25 +7,21 @@ import '../widgets/meters_input_widget.dart';
 import '../widgets/numeric_widget.dart';
 import '../widgets/seconds_input_widget.dart';
 
-class WorkoutRecordingPage extends StatefulWidget {
-  final WorkoutPlan workoutPlan;
-  const WorkoutRecordingPage({required this.workoutPlan, super.key});
-
+class HardcodedWorkoutPage extends StatefulWidget {
   @override
-  _WorkoutRecordingPageState createState() => _WorkoutRecordingPageState();
+  _HardcodedWorkoutPageState createState() => _HardcodedWorkoutPageState();
 }
 
-class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
-  late List<Exercise> exercises;
-  final Map<int, int> actualOutputs = {};
+class _HardcodedWorkoutPageState extends State<HardcodedWorkoutPage> {
+  final List<Exercise> exercises = [
+    Exercise(name: 'Jumping Jacks', target: 50, actual: 0, unit: 'Reps', type: 'Reps'),
+    Exercise(name: 'Lunges', target: 30, actual: 0, unit: 'Reps', type: 'Reps'),
+    Exercise(name: 'Burpees', target: 20, actual: 0, unit: 'Reps', type: 'Reps'),
+    Exercise(name: 'Wall Sit', target: 45, actual: 0, unit: 'Seconds', type: 'Seconds'),
+    Exercise(name: 'Running', target: 800, actual: 0, unit: 'Meters', type: 'Meters'),
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-    exercises = (jsonDecode(widget.workoutPlan.exercises) as List)
-        .map((e) => Exercise.fromJson(e))
-        .toList();
-  }
+  final Map<int, int> actualOutputs = {}; // Stores user inputs
 
   void _saveWorkout() async {
     final database = await getDatabase();
@@ -41,7 +38,7 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
     }).toList();
 
     final workout = Workout(
-      name: widget.workoutPlan.name,
+      name: "Hardcoded Workout",
       date: DateTime.now().toIso8601String(),
       exercises: jsonEncode(recordedExercises.map((e) => e.toJson()).toList()),
     );
@@ -58,7 +55,7 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.workoutPlan.name)),
+      appBar: AppBar(title: Text("Hardcoded Workout")),
       body: ListView.builder(
         itemCount: exercises.length,
         itemBuilder: (context, index) {

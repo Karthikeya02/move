@@ -110,16 +110,22 @@ class _DownloadWorkoutPageState extends State<DownloadWorkoutPage> {
     if (_selectedWorkout == null) return;
 
     final database = await getDatabase();
-    await database.workoutDao.insertWorkout(_selectedWorkout!);
+    await database.workoutPlanDao.insertWorkoutPlan(
+      WorkoutPlan(
+        name: _selectedWorkout!.name,
+        exercises: jsonEncode(_selectedWorkout!.getExerciseList().map((e) => e.toJson()).toList()),
+        duration: "Custom Duration", // Placeholder
+      ),
+    );
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Workout saved!")),
     );
 
-    // Redirect to selection page with workout details
-    Navigator.pushReplacementNamed(
-        context, '/add_workout', arguments: _selectedWorkout);
+    // Navigate to Add Workout Page
+    Navigator.pushReplacementNamed(context, '/add_workout');
   }
+
 
   @override
   Widget build(BuildContext context) {

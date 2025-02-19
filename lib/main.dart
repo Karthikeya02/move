@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:move/workout_details/add_workout_page.dart';
-import 'package:move/workout_details/download_workout_page.dart';
-import 'package:move/workout_details/workout_recording_page.dart';
+import 'package:move/workout_details/hardcode_workout_plan.dart';
 import 'package:provider/provider.dart';
-
 import 'models/workout_model.dart'; // Import workout model
-import 'workout_details/workout_history_page.dart'; // Import the workout history page
+import 'database/database.dart';
+import 'workout_details/add_workout_page.dart';
+import 'workout_details/download_workout_page.dart';
+import 'workout_details/workout_history_page.dart';
+import 'workout_details/workout_recording_page.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -31,15 +35,21 @@ class MyApp extends StatelessWidget {
           ),
         ),
         initialRoute: '/',
-        // Define initial route
         routes: {
           '/': (context) => WorkoutHistoryPage(),
           '/add_workout': (context) => AddWorkoutPage(),
           '/download_workout': (context) => DownloadWorkoutPage(),
           '/workout_history': (context) => WorkoutHistoryPage(),
-          '/workout_recording': (context) => WorkoutRecordingPage(),
-
-
+          '/hardcoded_workout': (context) => HardcodedWorkoutPage(),
+        },
+        onGenerateRoute: (settings) {
+          if (settings.name == '/workout_recording') {
+            final args = settings.arguments as WorkoutPlan;
+            return MaterialPageRoute(
+              builder: (context) => WorkoutRecordingPage(workoutPlan: args),
+            );
+          }
+          return null;
         },
       ),
     );

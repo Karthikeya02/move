@@ -17,7 +17,7 @@ class _ScoreWidgetState extends State<ScoreWidget> {
     _loadWorkoutsFromDB();
   }
 
-  /// Fetch workouts from the database
+
   Future<void> _loadWorkoutsFromDB() async {
     final database = await getDatabase();
     List<Workout> fetchedWorkouts = await database.workoutDao.getAllWorkouts();
@@ -25,8 +25,6 @@ class _ScoreWidgetState extends State<ScoreWidget> {
     setState(() {
       _workouts = fetchedWorkouts;
     });
-
-    print("DEBUG: Loaded ${_workouts.length} workouts from DB.");
   }
 
   @override
@@ -71,7 +69,7 @@ class _ScoreWidgetState extends State<ScoreWidget> {
       }
     }
 
-    // Compute averages
+
     double finalOverallScore = totalExercisesOverall > 0 ? (overallScore / totalExercisesOverall) : 0.0;
     double finalTodayScore = totalExercisesToday > 0 ? (todayScore / totalExercisesToday) : 0.0;
 
@@ -101,7 +99,7 @@ class _ScoreWidgetState extends State<ScoreWidget> {
     );
   }
 
-  /// Computes the score for an exercise (1 if completed, else percentage of target)
+
   double _calculateExerciseScore(Exercise exercise) {
     if (exercise.actual >= exercise.target) {
       return 1.0;
@@ -109,7 +107,6 @@ class _ScoreWidgetState extends State<ScoreWidget> {
     return exercise.actual / exercise.target;
   }
 
-  /// UI: Displays a Circular Score Indicator
   Widget _buildCircularScoreCard(String title, double score) {
     return Column(
       children: [
@@ -134,7 +131,7 @@ class _ScoreWidgetState extends State<ScoreWidget> {
     );
   }
 
-  /// Utility function to check if two dates are the same day
+
   bool _isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
   }

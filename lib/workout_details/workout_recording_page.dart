@@ -49,7 +49,6 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
 
     await database.workoutDao.insertWorkout(workout);
 
-    print("Workout saved: ${workout.toJson()}");  // ✅ Debug log
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Workout Saved!")),

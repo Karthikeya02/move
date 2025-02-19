@@ -89,7 +89,6 @@ class WorkoutDetailsPage extends StatelessWidget {
     );
   }
 
-  /// Shows the Score Modal
   void _showScore(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -103,7 +102,6 @@ class WorkoutDetailsPage extends StatelessWidget {
     );
   }
 
-  /// Creates a Gradient Button for "View Score"
   Widget _buildGradientButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),

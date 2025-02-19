@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For Date Formatting
+import 'package:intl/intl.dart';
 import '../database/database.dart';
 import '../models/workout_model.dart';
 import '../workout_details/workout_details.dart';
-import '../score_widget.dart'; // Import Score Widget
+import '../score_widget.dart';
 
 class WorkoutHistoryPage extends StatefulWidget {
   @override
@@ -11,24 +11,24 @@ class WorkoutHistoryPage extends StatefulWidget {
 }
 
 class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
-  Future<List<Workout>>? _workouts; // Nullable future
+  Future<List<Workout>>? _workouts;
 
   @override
   void initState() {
     super.initState();
-    _loadWorkouts(); // Load workouts when app starts
+    _loadWorkouts();
   }
 
   Future<void> _loadWorkouts() async {
     final db = await getDatabase();
     final workouts = await db.workoutDao.getAllWorkouts();
     setState(() {
-      _workouts = Future.value(workouts); // Update UI with latest data
+      _workouts = Future.value(workouts);
     });
   }
 
   Future<void> _refreshWorkouts() async {
-    await _loadWorkouts(); // Reload workouts when user refreshes
+    await _loadWorkouts();
   }
 
   @override
@@ -47,7 +47,7 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
                 future: _workouts,
                 builder: (context, snapshot) {
                   if (_workouts == null) {
-                    return Center(child: CircularProgressIndicator()); // Initial load
+                    return Center(child: CircularProgressIndicator());
                   }
 
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -75,7 +75,7 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
 
                   return ListView.builder(
                     itemCount: workouts.length,
-                    padding: EdgeInsets.only(bottom: 100), // Prevent overlap with FAB
+                    padding: EdgeInsets.only(bottom: 100),
                     itemBuilder: (context, index) {
                       final workout = workouts[index];
 
@@ -121,18 +121,18 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
               ),
             ),
           ),
-          SizedBox(height: 10), // Space between list and button
-          _buildGradientButton(context), // View Score button
-          SizedBox(height: 20), // Extra spacing to prevent FAB overlap
+          SizedBox(height: 10),
+          _buildGradientButton(context),
+          SizedBox(height: 20),
         ],
       ),
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: 90), // Moves FAB higher to avoid overlap
+        padding: EdgeInsets.only(bottom: 90),
         child: FloatingActionButton(
           backgroundColor: Colors.pinkAccent,
           onPressed: () {
             Navigator.pushNamed(context, '/add_workout').then((_) {
-              _refreshWorkouts(); // Refresh list after adding new workout
+              _refreshWorkouts();
             });
           },
           child: Icon(Icons.add, size: 28),
@@ -141,7 +141,6 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
     );
   }
 
-  /// Creates a Gradient Button for "View Score"
   Widget _buildGradientButton(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
@@ -180,7 +179,6 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
     );
   }
 
-  /// Show Score Modal
   void _showScore(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -194,7 +192,6 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
     );
   }
 
-  /// Formats the Date into a human-readable format (e.g., "Mar 10, 2024 - 2:30 PM")
   String _formatDate(String dateString) {
     DateTime date = DateTime.parse(dateString);
     return DateFormat("MMM d, y - h:mm a").format(date);

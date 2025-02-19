@@ -49,8 +49,10 @@ class _HardcodedWorkoutPageState extends State<HardcodedWorkoutPage> {
       const SnackBar(content: Text("Workout Saved!")),
     );
 
+    /// Use pushReplacementNamed to avoid duplicate history pages
     Navigator.pushReplacementNamed(context, '/workout_history');
   }
+
 
   @override
   Widget build(BuildContext context) {

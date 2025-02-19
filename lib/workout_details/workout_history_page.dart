@@ -22,6 +22,12 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
       _workouts = _fetchSavedWorkouts();
     });
   }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadWorkouts(); // Reload workouts when returning to the history page
+  }
+
 
   Future<List<Workout>> _fetchSavedWorkouts() async {
     final database = await getDatabase();

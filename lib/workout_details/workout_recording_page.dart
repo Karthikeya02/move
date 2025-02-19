@@ -52,8 +52,10 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
       const SnackBar(content: Text("Workout Saved!")),
     );
 
+    /// Use pushReplacementNamed instead of pushNamed
     Navigator.pushReplacementNamed(context, '/workout_history');
   }
+
 
   @override
   Widget build(BuildContext context) {

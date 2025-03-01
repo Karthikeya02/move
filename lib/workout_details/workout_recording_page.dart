@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+
 import '../database/database.dart';
 import '../models/workout_model.dart';
 import '../widgets/meters_input_widget.dart';
@@ -49,14 +51,12 @@ class _WorkoutRecordingPageState extends State<WorkoutRecordingPage> {
 
     await database.workoutDao.insertWorkout(workout);
 
-
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Workout Saved!")),
     );
 
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
-
 
   @override
   Widget build(BuildContext context) {

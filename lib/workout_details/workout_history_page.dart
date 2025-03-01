@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import '../database/database.dart';
 import '../models/workout_model.dart';
-import '../workout_details/workout_details.dart';
 import '../score_widget.dart';
+import '../workout_details/workout_details.dart';
 
 class WorkoutHistoryPage extends StatefulWidget {
   @override
@@ -80,13 +81,15 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
                       final workout = workouts[index];
 
                       return Card(
-                        margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                         elevation: 4,
                         child: ListTile(
-                          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 16),
                           leading: CircleAvatar(
                             radius: 30,
                             backgroundColor: Colors.pinkAccent.withOpacity(0.2),
@@ -98,18 +101,22 @@ class _WorkoutHistoryPageState extends State<WorkoutHistoryPage> {
                           ),
                           title: Text(
                             workout.name,
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(
                             "Date: ${_formatDate(workout.date)}",
-                            style: TextStyle(fontSize: 15, color: Colors.grey[700]),
+                            style: TextStyle(
+                                fontSize: 15, color: Colors.grey[700]),
                           ),
-                          trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                          trailing:
+                              Icon(Icons.arrow_forward_ios, color: Colors.grey),
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => WorkoutDetailsPage(workout: workout),
+                                builder: (context) =>
+                                    WorkoutDetailsPage(workout: workout),
                               ),
                             );
                           },

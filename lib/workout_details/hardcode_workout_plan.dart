@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+
 import '../database/database.dart';
 import '../models/workout_model.dart';
 import '../widgets/meters_input_widget.dart';
@@ -19,18 +21,9 @@ class _HardcodedWorkoutPageState extends State<HardcodedWorkoutPage> {
         actual: 0,
         unit: 'Reps',
         type: 'Reps'),
+    Exercise(name: 'Lunges', target: 30, actual: 0, unit: 'Reps', type: 'Reps'),
     Exercise(
-        name: 'Lunges',
-        target: 30,
-        actual: 0,
-        unit: 'Reps',
-        type: 'Reps'),
-    Exercise(
-        name: 'Burpees',
-        target: 20,
-        actual: 0,
-        unit: 'Reps',
-        type: 'Reps'),
+        name: 'Burpees', target: 20, actual: 0, unit: 'Reps', type: 'Reps'),
     Exercise(
         name: 'Wall Sit',
         target: 45,
@@ -74,7 +67,6 @@ class _HardcodedWorkoutPageState extends State<HardcodedWorkoutPage> {
     );
 
     Navigator.of(context).popUntil((route) => route.isFirst);
-
   }
 
   @override

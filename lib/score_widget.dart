@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+
 import '../database/database.dart';
 import '../models/workout_model.dart';
 
@@ -16,7 +17,6 @@ class _ScoreWidgetState extends State<ScoreWidget> {
     super.initState();
     _loadWorkoutsFromDB();
   }
-
 
   Future<void> _loadWorkoutsFromDB() async {
     final database = await getDatabase();
@@ -35,7 +35,8 @@ class _ScoreWidgetState extends State<ScoreWidget> {
         child: Center(
           child: Text(
             "No workouts recorded yet.",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
+            style: TextStyle(
+                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
           ),
         ),
       );
@@ -69,9 +70,11 @@ class _ScoreWidgetState extends State<ScoreWidget> {
       }
     }
 
-
-    double finalOverallScore = totalExercisesOverall > 0 ? (overallScore / totalExercisesOverall) : 0.0;
-    double finalTodayScore = totalExercisesToday > 0 ? (todayScore / totalExercisesToday) : 0.0;
+    double finalOverallScore = totalExercisesOverall > 0
+        ? (overallScore / totalExercisesOverall)
+        : 0.0;
+    double finalTodayScore =
+        totalExercisesToday > 0 ? (todayScore / totalExercisesToday) : 0.0;
 
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -99,7 +102,6 @@ class _ScoreWidgetState extends State<ScoreWidget> {
     );
   }
 
-
   double _calculateExerciseScore(Exercise exercise) {
     if (exercise.actual >= exercise.target) {
       return 1.0;
@@ -113,7 +115,8 @@ class _ScoreWidgetState extends State<ScoreWidget> {
         CircularPercentIndicator(
           radius: 65.0,
           lineWidth: 10.0,
-          percent: score.clamp(0.0, 1.0), // Ensure within 0-100%
+          percent: score.clamp(0.0, 1.0),
+          // Ensure within 0-100%
           center: Text(
             "${(score * 100).toStringAsFixed(1)}%",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -131,8 +134,9 @@ class _ScoreWidgetState extends State<ScoreWidget> {
     );
   }
 
-
   bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 }

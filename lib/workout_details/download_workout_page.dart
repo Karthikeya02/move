@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:http/http.dart' as http;
@@ -26,10 +27,8 @@ class _DownloadWorkoutPageState extends State<DownloadWorkoutPage> {
         final contentType = response.headers['content-type'] ?? "";
 
         if (contentType.contains("application/json")) {
-
           _parseWorkoutJson(response.body);
         } else if (contentType.contains("text/html")) {
-
           _extractJsonLinks(response.body, url);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

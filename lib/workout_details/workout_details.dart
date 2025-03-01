@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/workout_model.dart';
 import '../score_widget.dart';
 
@@ -37,7 +38,8 @@ class WorkoutDetailsPage extends StatelessWidget {
                   children: [
                     Text(
                       "Total Exercises: $totalExercises",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 8),
                     Text(

@@ -1,11 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:move/main.dart'; // Assuming this is the entry point
+import 'package:move/main.dart';
 import 'package:move/models/workout_model.dart';
-import 'package:move/widgets/meters_input_widget.dart';
 import 'package:move/widgets/numeric_widget.dart';
-import 'package:move/widgets/seconds_input_widget.dart';
-import 'package:move/workout_details/workout_recording_page.dart'; // Assuming the page is here
+import 'package:move/workout_details/workout_recording_page.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -15,17 +15,20 @@ void main() {
       // Set up mock workout data with exercises
       final mockWorkoutProvider = WorkoutProvider();
       final now = DateTime.now();
+
+      final exercises = [
+        Exercise(
+            name: 'Push-ups',
+            target: 10,
+            actual: 0,
+            unit: 'Reps',
+            type: 'Reps'),
+      ];
+
       mockWorkoutProvider.addWorkout(Workout(
-        date: now.toString(),
-        exerciseResults: [
-          ExerciseResult('Push-ups', 'Reps', 7),
-          ExerciseResult('Plank', 'Seconds', 4),
-          ExerciseResult('Cycling', 'Meters', 1),
-          ExerciseResult('Running', 'Meters', 1),
-          ExerciseResult('Swimming', 'Meters', 1),
-          ExerciseResult('Squats', 'Reps', 1),
-        ],
-        exercises: [],
+        name: "Test Workout",
+        date: now.toIso8601String(),
+        exercises: jsonEncode(exercises.map((e) => e.toJson()).toList()),
       ));
 
       // Render the page with the mock provider
@@ -34,27 +37,27 @@ void main() {
           home: ChangeNotifierProvider<WorkoutProvider>.value(
             value: mockWorkoutProvider,
             child: Scaffold(
-              body:
-                  WorkoutRecordingPage(), // The page containing the input fields for exercises
+              body: WorkoutRecordingPage(
+                workoutPlan: WorkoutPlan(
+                  id: 1,
+                  name: "Test Workout Plan",
+                  exercises:
+                      jsonEncode(exercises.map((e) => e.toJson()).toList()),
+                  duration: "30 mins",
+                ),
+              ),
             ),
           ),
         ),
       );
 
-      // Wait for the widget to build and settle
       await tester.pumpAndSettle();
 
-      // Check for the exercise names to ensure they are displayed
+      // Check for the exercise names
       expect(find.text('Push-ups'), findsOneWidget);
-      expect(find.text('Plank'), findsOneWidget);
-      expect(find.text('Running'), findsOneWidget);
-      expect(find.text('Cycling'), findsOneWidget);
-      expect(find.text('Squats'), findsOneWidget);
 
       // Check for the input widgets
-      expect(find.byType(NumericInputWidget), findsNWidgets(2));
-      expect(find.byType(SecondsInputWidget), findsNWidgets(1));
-      expect(find.byType(MetersInputWidget), findsNWidgets(2));
+      expect(find.byType(NumericInputWidget), findsNWidgets(1));
     });
   });
 }

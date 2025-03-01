@@ -1,39 +1,49 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:intl/intl.dart';
-import 'package:move/main.dart'; // Import the main app to access the page
-import 'package:move/models/workout_model.dart'; // Assuming the WorkoutProvider uses Workout model
+import 'package:move/main.dart';
+import 'package:move/models/workout_model.dart';
 import 'package:move/workout_details/workout_history_page.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   group('WorkoutHistoryPage Tests', () {
-    testWidgets('WorkoutHistoryPage', (WidgetTester tester) async {
+    testWidgets('WorkoutHistoryPage displays workout history correctly',
+        (WidgetTester tester) async {
       final mockWorkoutProvider = WorkoutProvider();
       final now = DateTime.now();
-      mockWorkoutProvider.addWorkout(Workout(
-        name: "Your Workout",
-        date: now.toString(),
-      ));
 
-      // Render the page with the mock provider
+      final exercises = [
+        Exercise(
+            name: 'Push-ups', target: 10, actual: 5, unit: 'Reps', type: 'Reps')
+      ];
+
+      await tester.runAsync(() async {
+        mockWorkoutProvider.addWorkout(Workout(
+          name: "Hardcoded Workout",
+          date: now.toIso8601String(),
+          exercises: jsonEncode(exercises.map((e) => e.toJson()).toList()),
+        ));
+      });
+
+      // ✅ Wrap the page in the provider BEFORE building the UI
       await tester.pumpWidget(
-        MaterialApp(
-          home: ChangeNotifierProvider<WorkoutProvider>.value(
-            value: mockWorkoutProvider,
-            child: Scaffold(
-              body:
-                  WorkoutHistoryPage(), // Page that shows the list of workouts
-            ),
+        ChangeNotifierProvider<WorkoutProvider>.value(
+          value: mockWorkoutProvider,
+          child: MaterialApp(
+            home: WorkoutHistoryPage(),
           ),
         ),
       );
 
-      await tester.pump();
+      await tester.pumpAndSettle(); // ✅ Wait for UI updates
 
-      final formattedTimestamp1 = DateFormat('yyyy-MM-dd h:mm a').format(now);
+      final formattedDate = now.toIso8601String().split('T')[0];
 
-      expect(find.text(formattedTimestamp1), findsOneWidget);
+      // ✅ Verify workout is displayed
+      expect(find.text("Hardcoded Workout"), findsOneWidget);
+      expect(find.text("Date: $formattedDate"), findsOneWidget);
     });
   });
 }
